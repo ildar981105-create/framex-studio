@@ -394,7 +394,7 @@ function updatePlayerUI() {
 // --- Sidebar active state ---
 (function initSidebarActive() {
     const currentPage = window.location.pathname.split('/').pop() || 'create.html';
-    const subPages = ['translate-v4.html', 'livestream.html', 'generate.html'];
+    const subPages = ['translate-v6.html', 'livestream.html', 'generate.html'];
     const isSubPage = subPages.some(p => currentPage === p);
 
     // 只处理主导航区域的导航项（排除底部 API/设置）
