@@ -3132,7 +3132,7 @@
     .tv2-config-cols {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 0 32px;
+        gap: 0 20px;
     }
     @media (max-width: 640px) {
         .tv2-config-cols { grid-template-columns: 1fr; }
@@ -3197,9 +3197,13 @@
     /* ===== 配置面板：单选按钮组 ===== */
     .cfg-radio-group {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
+        flex-wrap: wrap;
         gap: 8px;
         margin-bottom: 14px;
+    }
+    .cfg-radio-group.vertical {
+        flex-direction: column;
     }
     .cfg-radio-item {
         display: flex;
@@ -3209,6 +3213,10 @@
         border-radius: 10px;
         cursor: pointer;
         transition: background 0.2s;
+    }
+    .cfg-radio-group:not(.vertical) .cfg-radio-item {
+        flex: 0 1 auto;
+        padding: 8px 14px;
     }
     .cfg-radio-item:hover {
         background: rgba(255,255,255,0.03);
@@ -4621,7 +4629,7 @@
                             <div class="tv2-config-group" id="tv2ConfigErase">
                                 <div class="tv2-config-group-title">🧹 擦除设置</div>
                                 <!-- 擦除方式 单选 -->
-                                <div class="cfg-radio-group" data-cfg="eraseMethod">
+                                <div class="cfg-radio-group vertical" data-cfg="eraseMethod">
                                     <div class="cfg-radio-item selected" data-value="auto">
                                         <div class="cfg-radio-dot"></div>
                                         <div class="cfg-radio-text">
@@ -4638,7 +4646,7 @@
                                     </div>
                                 </div>
                                 <!-- 去字幕模型 单选 + 说明 + 对比图 -->
-                                <div class="cfg-radio-group" data-cfg="eraseModel">
+                                <div class="cfg-radio-group vertical" data-cfg="eraseModel">
                                     <div class="cfg-radio-item selected" data-value="standard">
                                         <div class="cfg-radio-dot"></div>
                                         <div class="cfg-radio-text">
@@ -4646,10 +4654,10 @@
                                             <div class="cfg-radio-desc">基于深度学习的智能修复算法，擦除效果自然、速度快</div>
                                         </div>
                                     </div>
-                                    <div class="cfg-radio-item" data-value="region">
+                                    <div class="cfg-radio-item" data-value="hq">
                                         <div class="cfg-radio-dot"></div>
                                         <div class="cfg-radio-text">
-                                            <div class="cfg-radio-title">区域版</div>
+                                            <div class="cfg-radio-title">高质量版</div>
                                             <div class="cfg-radio-desc">针对复杂背景优化，精度更高但速度稍慢</div>
                                         </div>
                                     </div>
@@ -4744,14 +4752,14 @@
                                 <div class="tv2-config-row">
                                     <span class="tv2-config-label"><span class="tv2-config-label-icon">🌐</span>源语言 <span class="cfg-info-tip" title="视频中原始语言">ⓘ</span></span>
                                     <div class="tv2-config-value">
-                                        <select id="cfgSubSrcLang"><option value="zh-en">中英</option><option value="zh">中文</option><option value="en">英语</option><option value="ja">日语</option><option value="ko">韩语</option><option value="auto">自动检测</option></select>
+                                        <select id="cfgSubSrcLang"><option value="zh">中文</option><option value="en">英语</option><option value="ja">日语</option><option value="ko">韩语</option><option value="auto">自动检测</option></select>
                                     </div>
                                 </div>
                                 <!-- 是否开启翻译 -->
                                 <div class="tv2-config-row">
                                     <span class="tv2-config-label"><span class="tv2-config-label-icon">🌍</span>是否开启翻译 <span class="cfg-info-tip" title="开启后将翻译为目标语言">ⓘ</span></span>
                                     <div class="tv2-config-value">
-                                        <div class="tv2-config-switch" id="cfgSubTranslate" data-key="subTranslateEnabled"></div>
+                                        <div class="tv2-config-switch on" id="cfgSubTranslate" data-key="subTranslateEnabled"></div>
                                     </div>
                                 </div>
                                 <!-- 字幕文件格式 -->
@@ -4765,7 +4773,7 @@
                                 <div class="tv2-config-row">
                                     <span class="tv2-config-label"><span class="tv2-config-label-icon">🔤</span>字幕类型</span>
                                     <div class="tv2-config-value">
-                                        <span class="cfg-inline-tag" id="cfgSubTypeTag">单语（源语言）</span>
+                                        <span class="cfg-inline-tag" id="cfgSubTypeTag">双语（源语言 + 目标语言）</span>
                                     </div>
                                 </div>
 
@@ -4786,29 +4794,24 @@
                                         <div class="cfg-card-desc">独立字幕文件，播放时支持开关</div>
                                     </div>
                                 </div>
-                                <!-- 选择视频文件 -->
-                                <div class="cfg-file-input">
-                                    <input type="text" placeholder="请选择视频文件 *" readonly>
-                                    <button class="cfg-file-btn" type="button">选择</button>
-                                </div>
-                                <!-- 字幕来源 单选 -->
+                                <!-- 压制来源 单选 -->
                                 <div class="cfg-radio-group" data-cfg="subFileSource">
-                                    <div class="cfg-radio-item selected" data-value="file">
+                                    <div class="cfg-radio-item selected" data-value="auto">
                                         <div class="cfg-radio-dot"></div>
                                         <div class="cfg-radio-text">
-                                            <div class="cfg-radio-title">字幕文件</div>
+                                            <div class="cfg-radio-title">使用上方提取/翻译的字幕</div>
                                         </div>
                                     </div>
-                                    <div class="cfg-radio-item" data-value="track">
+                                    <div class="cfg-radio-item" data-value="file">
                                         <div class="cfg-radio-dot"></div>
                                         <div class="cfg-radio-text">
-                                            <div class="cfg-radio-title">源视频字幕轨</div>
+                                            <div class="cfg-radio-title">上传外部字幕文件</div>
                                         </div>
                                     </div>
                                 </div>
-                                <!-- 字幕路径 -->
-                                <div class="cfg-file-input">
-                                    <input type="text" placeholder="请选择字幕路径 *" readonly>
+                                <!-- 字幕文件上传（仅选择"上传外部字幕文件"时显示） -->
+                                <div class="cfg-file-input" id="cfgSubFileUpload" style="display:none;">
+                                    <input type="text" placeholder="请选择字幕文件（SRT/VTT/ASS）" readonly>
                                     <button class="cfg-file-btn" type="button">选择</button>
                                 </div>
                                 <!-- 字幕样式 -->
@@ -6189,13 +6192,80 @@
         let activeSteps = ['erase', 'subtitle', 'voice']; // user-confirmed steps
         let currentStep = -1;
 
+        /* ===== Read Default Config Panel Values ===== */
+        // 读取用户在默认配置面板中的设置，传入沉浸式 Chat 流程
+        let userConfig = {};
+        function readDefaultConfig() {
+            const mode = window.workflowMode || 'full';
+            const cfg = {};
+
+            // 语言名称映射
+            const langNames = {
+                'zh': '中文', 'en': '英语', 'ja': '日语', 'ko': '韩语',
+                'fr': '法语', 'de': '德语', 'es': '西班牙语', 'th': '泰语',
+                'vi': '越南语', 'ar': '阿拉伯语', 'auto': '自动检测'
+            };
+
+            if (mode === 'full') {
+                // 一键译制
+                const voiceTypeEl = document.querySelector('#tv2ConfigFull [data-cfg="fullVoiceType"] .cfg-card.selected');
+                cfg.voiceType = voiceTypeEl ? voiceTypeEl.dataset.value : 'clone';
+                cfg.voiceTypeLabel = cfg.voiceType === 'clone' ? '原声克隆' : '标准音色';
+                cfg.srcLang = document.getElementById('cfgFullSrcLang')?.value || 'zh';
+                cfg.srcLangLabel = langNames[cfg.srcLang] || cfg.srcLang;
+                cfg.tgtLang = document.getElementById('cfgFullTgtLang')?.value || 'en';
+                cfg.tgtLangLabel = langNames[cfg.tgtLang] || cfg.tgtLang;
+                const subSourceEl = document.querySelector('#tv2ConfigFull [data-cfg="fullSubSource"] .cfg-card.selected');
+                cfg.subSource = subSourceEl ? subSourceEl.dataset.value : 'ocr';
+                cfg.subSourceLabel = cfg.subSource === 'ocr' ? 'OCR 文本识别' : 'ASR 语音识别';
+                cfg.eraseEnabled = document.getElementById('cfgFullErase')?.classList.contains('on') ?? true;
+                cfg.burnEnabled = document.getElementById('cfgFullBurn')?.classList.contains('on') ?? true;
+            } else if (mode === 'erase') {
+                // 擦除字幕
+                const eraseMethodEl = document.querySelector('#tv2ConfigErase [data-cfg="eraseMethod"] .cfg-radio-item.selected');
+                cfg.eraseMethod = eraseMethodEl ? eraseMethodEl.dataset.value : 'auto';
+                cfg.eraseMethodLabel = cfg.eraseMethod === 'auto' ? 'AI 自动检测' : '指定区域擦除';
+                const eraseModelEl = document.querySelector('#tv2ConfigErase [data-cfg="eraseModel"] .cfg-radio-item.selected');
+                cfg.eraseModel = eraseModelEl ? eraseModelEl.dataset.value : 'standard';
+                cfg.eraseModelLabel = cfg.eraseModel === 'standard' ? '标准版' : '高质量版';
+            } else if (mode === 'subtitle') {
+                // 添加字幕
+                const subSourceEl = document.querySelector('#tv2ConfigSubtitle [data-cfg="subSource"] .cfg-card.selected');
+                cfg.subSource = subSourceEl ? subSourceEl.dataset.value : 'ocr';
+                cfg.srcLang = document.getElementById('cfgSubSrcLang')?.value || 'zh';
+                cfg.srcLangLabel = langNames[cfg.srcLang] || cfg.srcLang;
+                cfg.translateEnabled = document.getElementById('cfgSubTranslate')?.classList.contains('on') ?? true;
+                cfg.subFormat = document.getElementById('cfgSubFormat')?.value || 'vtt';
+            } else if (mode === 'voice') {
+                // 克隆配音
+                const voiceTypeEl = document.querySelector('#tv2ConfigVoice [data-cfg="voiceType"] .cfg-card.selected');
+                cfg.voiceType = voiceTypeEl ? voiceTypeEl.dataset.value : 'clone';
+                cfg.voiceTypeLabel = cfg.voiceType === 'clone' ? '原声克隆' : '标准音色';
+                cfg.srcLang = document.getElementById('cfgVoiceSrcLang')?.value || 'zh';
+                cfg.srcLangLabel = langNames[cfg.srcLang] || cfg.srcLang;
+                cfg.tgtLang = document.getElementById('cfgVoiceTgtLang')?.value || 'en';
+                cfg.tgtLangLabel = langNames[cfg.tgtLang] || cfg.tgtLang;
+            }
+
+            userConfig = cfg;
+            return cfg;
+        }
+
         function buildConfigChat() {
             chatFlow.innerHTML = '';
+
+            // 读取默认配置面板的用户设置
+            const cfg = readDefaultConfig();
+            const mode = window.workflowMode || 'full';
+
+            // 根据用户配置动态更新 stepMeta
+            updateStepMetaFromConfig(cfg, mode);
 
             // User bubble: uploaded
             appendBubble('user', `已上传 <strong>${uploadedFileName}</strong>`, 0);
 
-            // AI: analysis result
+            // AI: analysis result — 使用配置面板中的源语言
+            const detectedLang = cfg.srcLangLabel || '中文';
             const analysisHtml = `
                 <div class="bubble-video-info">
                     <div class="bubble-video-thumb"><video id="chatThumb" muted src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:inherit;"></video></div>
@@ -6204,12 +6274,12 @@
                         <span class="vmeta">128.5 MB · 1920×1080 · 30fps</span>
                     </div>
                 </div>
-                视频分析完成！检测到语言: <strong>中文</strong> | 时长: <strong>01:30</strong><br>
-                ${(window.workflowMode || 'full') === 'full'
+                视频分析完成！检测到语言: <strong>${detectedLang}</strong> | 时长: <strong>01:30</strong><br>
+                ${mode === 'full'
                     ? '即将自动完成 <strong>擦除字幕 → 文案翻译 → AI 配音</strong> 全流程，完成后可在精调面板中微调细节。'
-                    : (window.workflowMode === 'erase'
+                    : (mode === 'erase'
                         ? '即将自动执行 <strong>擦除字幕</strong>，完成后可在精调面板中微调细节。'
-                        : window.workflowMode === 'subtitle'
+                        : mode === 'subtitle'
                             ? '即将自动执行 <strong>添加字幕</strong>，完成后可在精调面板中微调细节。'
                             : '即将自动执行 <strong>克隆配音</strong>，完成后可在精调面板中微调细节。')
                 }`;
@@ -6224,7 +6294,6 @@
             }, 100);
 
             // Set active steps based on workflow mode
-            const mode = window.workflowMode || 'full';
             if (mode === 'full') {
                 activeSteps = ['erase', 'subtitle', 'voice'];
             } else {
@@ -6233,6 +6302,48 @@
             setTimeout(() => {
                 advanceStep();
             }, 1000);
+        }
+
+        /* ===== Update stepMeta from user config ===== */
+        function updateStepMetaFromConfig(cfg, mode) {
+            const tgtLang = cfg.tgtLangLabel || '英文';
+            const voiceLabel = cfg.voiceTypeLabel || '原声克隆';
+
+            // 更新擦除步骤描述
+            if (mode === 'erase') {
+                const modelLabel = cfg.eraseModelLabel || '标准版';
+                stepMeta.erase.autoDesc = `正在以 <strong>${modelLabel} + AI 修复</strong> 模式自动检测字幕区域...`;
+                stepMeta.erase.scanResultText = `检测完成！发现 <strong>7 处</strong>字幕区域，已自动选择 <strong>${modelLabel}擦除 + AI 修复填充</strong>`;
+            } else {
+                stepMeta.erase.autoDesc = `正在以 <strong>高质量 + AI 修复</strong> 模式自动检测字幕区域...`;
+            }
+
+            // 更新字幕步骤 — 使用用户选择的目标语言
+            stepMeta.subtitle.autoDesc = `正在自动识别语音并翻译为 <strong>${tgtLang}</strong>...`;
+
+            // 更新配音步骤 — 使用用户选择的音色类型和目标语言
+            stepMeta.voice.autoDesc = `正在以 <strong>${voiceLabel}</strong> 音色自动生成配音...`;
+            stepMeta.voice.scanResultText = `配音生成完成！已使用<strong>${voiceLabel}</strong>音色生成 <strong>7 段</strong>${tgtLang}配音`;
+
+            // 更新配音配置下拉框的默认选中项
+            const voiceSelectDefault = cfg.voiceType === 'standard' ? '自然男声' : '克隆原声';
+            stepMeta.voice.configHtml = `<div class="chat-quick-config">
+                    <div class="chat-config-row" data-feature="voice">
+                        <span class="ccr-icon"></span>
+                        <span class="ccr-label">音色</span>
+                        <select><option ${cfg.voiceType === 'clone' ? 'selected' : ''}>克隆原声</option><option ${cfg.voiceType === 'standard' ? 'selected' : ''}>自然男声</option><option>自然女声</option></select>
+                    </div>
+                    <div class="chat-config-row" data-feature="voice">
+                        <span class="ccr-icon"></span>
+                        <span class="ccr-label">语速</span>
+                        <select><option>自动匹配</option><option>稍快</option><option>稍慢</option></select>
+                    </div>
+                    <div class="chat-config-row" data-feature="voice">
+                        <span class="ccr-icon"></span>
+                        <span class="ccr-label">情绪</span>
+                        <select><option>自然</option><option>热情</option><option>沉稳</option><option>活泼</option></select>
+                    </div>
+                </div>`;
         }
 
         function advanceStep() {
@@ -6664,6 +6775,9 @@
 
         /* ===== Subtitle Step: Phase 2B — Translation Config ===== */
         function startTranslationPhase() {
+            const tgtLangForSub = userConfig.tgtLangLabel || '英语';
+            const langOptions = ['英语','日语','韩语','法语','德语','西班牙语'];
+            const langOptHtml = langOptions.map(l => `<option${l === tgtLangForSub ? ' selected' : ''}>${l}</option>`).join('');
             const translateConfigHtml = `
                 <div class="chat-translate-config">
                     <div class="ctc-title">
@@ -6674,7 +6788,7 @@
                         <div class="chat-config-row" data-feature="subtitle">
                             <span class="ccr-icon"></span>
                             <span class="ccr-label">目标</span>
-                            <select><option>英语</option><option>日语</option><option>韩语</option><option>法语</option><option>德语</option><option>西班牙语</option></select>
+                            <select>${langOptHtml}</select>
                         </div>
                         <div class="chat-config-row" data-feature="subtitle">
                             <span class="ccr-icon"></span>
@@ -6737,7 +6851,7 @@
                     <span class="scan-check">
                         <svg width="10" height="10" viewBox="0 0 14 14" fill="none"><path d="M3 7L6 10L11 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </span>
-                    翻译完成！已生成 <strong>${subtitleItems.length} 条</strong>中文→英文双语字幕
+                    翻译完成！已生成 <strong>${subtitleItems.length} 条</strong>${userConfig.srcLangLabel || '中文'}→${userConfig.tgtLangLabel || '英文'}双语字幕
                 </div>
                 <div class="chat-sub-list-inline">
                     ${subListHtml}
@@ -7410,9 +7524,12 @@
         function showStartButton() {
             // AI summary
             const enabledFeats = [];
+            const srcL = userConfig.srcLangLabel || '中文';
+            const tgtL = userConfig.tgtLangLabel || '英文';
+            const voiceL = userConfig.voiceTypeLabel || '原声克隆';
             if (features.erase) enabledFeats.push('擦除 7 处字幕');
-            if (features.subtitle) enabledFeats.push('中→英字幕翻译');
-            if (features.voice) enabledFeats.push('原声克隆配音');
+            if (features.subtitle) enabledFeats.push(`${srcL}→${tgtL}字幕翻译`);
+            if (features.voice) enabledFeats.push(`${voiceL}配音`);
 
             if (enabledFeats.length === 0) {
                 appendBubble('ai', '你跳过了所有步骤，请至少选择一个功能。', 0);
@@ -8401,6 +8518,13 @@
                 item.addEventListener('click', function() {
                     group.querySelectorAll('.cfg-radio-item').forEach(function(i) { i.classList.remove('selected'); });
                     item.classList.add('selected');
+                    // 压制来源联动：选择"上传外部字幕文件"时显示文件上传框
+                    if (group.dataset.cfg === 'subFileSource') {
+                        var fileUpload = document.getElementById('cfgSubFileUpload');
+                        if (fileUpload) {
+                            fileUpload.style.display = item.dataset.value === 'file' ? '' : 'none';
+                        }
+                    }
                 });
             });
         });
