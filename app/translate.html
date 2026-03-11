@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频译制 — FrameX</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 侧边栏 -->
+    <aside class="sidebar">
+        <a href="index.html" class="sidebar-logo">
+            <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><rect x="2" y="2" width="28" height="28" rx="8" stroke="url(#sLogo)" stroke-width="2.5"/><path d="M12 10L22 16L12 22V10Z" fill="url(#sLogo)"/><defs><linearGradient id="sLogo" x1="0" y1="0" x2="32" y2="32"><stop stop-color="#a855f7"/><stop offset="1" stop-color="#06b6d4"/></linearGradient></defs></svg>
+            <span>FrameX</span>
+        </a>
+        <nav class="sidebar-nav">
+            <a href="index.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 10L10 3L17 10V17H12V13H8V17H3V10Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg><span>工作台</span></a>
+            <a href="translate.html" class="nav-item active"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M7 9H13M7 12H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>视频译制</span></a>
+            <a href="livestream.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="4" cy="5" r="2" fill="#ef4444"/></svg><span>直播剪辑</span></a>
+            <a href="generate.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2L12 8H18L13 12L15 18L10 14L5 18L7 12L2 8H8L10 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg><span>AI 生成</span></a>
+            <div class="nav-divider"></div>
+            <a href="result.html" class="nav-item"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M7 10L9 12L13 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>任务记录</span></a>
+        </nav>
+        <div class="sidebar-bottom">
+            <div class="user-card"><div class="avatar">U</div><div class="user-info"><span class="user-name">用户</span><span class="user-plan">专业版</span></div></div>
+        </div>
+    </aside>
+
+    <!-- 全屏模式返回按钮 -->
+    <button class="back-to-nav" onclick="if(document.body.classList.contains('imm-editor-mode')){document.body.classList.remove('imm-editor-mode');document.querySelectorAll('.imm-phase').forEach(p=>p.classList.remove('imm-phase--active'));document.getElementById('phaseUpload').classList.add('imm-phase--active')}else if(window.parent.drillBack){window.parent.drillBack()}else if(window.drillBack){window.drillBack()}else{window.location.href='index.html'}">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        返回工作台
+    </button>
+
+    <main class="main-content">
+        <!-- 顶部栏 -->
+        <header class="topbar">
+            <div class="topbar-left"><h1 class="page-title">视频译制</h1></div>
+            <div class="topbar-right">
+                <div class="credits-badge">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M8 5V8L10 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    <span>剩余 47 次</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- ========== 沉浸式引导流程 ========== -->
+        <div class="immersive-flow" id="immersiveFlow">
+
+            <!-- 阶段 1：上传（居中大屏） -->
+            <div class="imm-phase imm-phase--active" id="phaseUpload">
+                <div class="imm-upload-hero">
+                    <div class="imm-hero-glow"></div>
+                    <div class="imm-hero-content">
+                        <div class="imm-hero-icon">
+                            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                                <rect x="4" y="8" width="32" height="24" rx="4" stroke="url(#gIco)" stroke-width="2.5"/>
+                                <path d="M15 20H25M15 24H21" stroke="url(#gIco)" stroke-width="2" stroke-linecap="round"/>
+                                <defs><linearGradient id="gIco" x1="4" y1="8" x2="36" y2="32"><stop stop-color="#a855f7"/><stop offset="1" stop-color="#06b6d4"/></linearGradient></defs>
+                            </svg>
+                        </div>
+                        <h1 class="imm-hero-title">上传视频，AI 帮你<span class="gradient-text">翻译全世界</span></h1>
+                        <p class="imm-hero-desc">支持 120+ 语言互译 · 自动擦除原字幕 · AI 声音克隆配音</p>
+                        <div class="imm-upload-zone" id="uploadZone">
+                            <div class="imm-upload-inner">
+                                <div class="imm-upload-icon-ring">
+                                    <div class="imm-upload-icon-ring-pulse"></div>
+                                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                        <path d="M16 6V20M16 6L22 12M16 6L10 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M6 22V26C6 27.1046 6.89543 28 8 28H24C25.1046 28 26 27.1046 26 26V22" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                                    </svg>
+                                </div>
+                                <h3>拖入视频文件，或点击选择</h3>
+                                <p>MP4、MOV、AVI、MKV 等格式，最大 2GB</p>
+                                <button class="imm-upload-btn">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8H14M8 2V14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                                    选择视频文件
+                                </button>
+                            </div>
+                        </div>
+                        <input type="file" id="videoFileInput" accept="video/*" hidden>
+                        <div class="imm-hero-formats">
+                            <span>支持格式</span>
+                            <span class="format-tag">MP4</span>
+                            <span class="format-tag">MOV</span>
+                            <span class="format-tag">AVI</span>
+                            <span class="format-tag">MKV</span>
+                            <span class="format-tag">WebM</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 阶段 2：视频已上传 + 语言配置 -->
+            <div class="imm-phase" id="phaseLang">
+                <div class="imm-phase-inner">
+                    <!-- 视频缩略图预览 -->
+                    <div class="imm-video-card">
+                        <div class="imm-video-thumb">
+                            <canvas id="thumbCanvas" width="320" height="180"></canvas>
+                            <div class="imm-video-badge">
+                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 1.5L10 6L3 10.5V1.5Z" fill="currentColor"/></svg>
+                                02:34
+                            </div>
+                        </div>
+                        <div class="imm-video-info">
+                            <span class="imm-video-name" id="videoFileName">demo_video.mp4</span>
+                            <span class="imm-video-size">128.5 MB · 1920×1080 · 30fps</span>
+                            <button class="imm-video-change" id="changeVideoBtn">更换视频</button>
+                        </div>
+                    </div>
+
+                    <!-- 语言选择 -->
+                    <div class="imm-lang-section">
+                        <div class="imm-section-title">
+                            <div class="imm-section-icon">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5H11M7 3V5M5 5C5 8.5 8.5 11 11 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10 15L14 8L18 15M11 13H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </div>
+                            <div>
+                                <h3>选择翻译语言</h3>
+                                <p>AI 将自动识别源语言并翻译为目标语言</p>
+                            </div>
+                        </div>
+                        <div class="imm-lang-picker">
+                            <div class="imm-lang-box">
+                                <label>源语言</label>
+                                <select id="srcLang">
+                                    <option>自动检测</option>
+                                    <option>中文</option>
+                                    <option>英语</option>
+                                    <option>日语</option>
+                                    <option>韩语</option>
+                                    <option>法语</option>
+                                    <option>德语</option>
+                                    <option>西班牙语</option>
+                                </select>
+                            </div>
+                            <div class="imm-lang-arrow">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12H19M15 8L19 12L15 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </div>
+                            <div class="imm-lang-box">
+                                <label>目标语言</label>
+                                <select id="tgtLang">
+                                    <option>英语</option>
+                                    <option>中文</option>
+                                    <option>日语</option>
+                                    <option>韩语</option>
+                                    <option>法语</option>
+                                    <option>德语</option>
+                                    <option>西班牙语</option>
+                                    <option>阿拉伯语</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="imm-lang-quick">
+                            <span class="imm-quick-label">常用</span>
+                            <button class="imm-quick-chip" data-src="中文" data-tgt="英语">中 → 英</button>
+                            <button class="imm-quick-chip" data-src="英语" data-tgt="中文">英 → 中</button>
+                            <button class="imm-quick-chip" data-src="中文" data-tgt="日语">中 → 日</button>
+                            <button class="imm-quick-chip" data-src="中文" data-tgt="韩语">中 → 韩</button>
+                            <button class="imm-quick-chip" data-src="英语" data-tgt="日语">英 → 日</button>
+                        </div>
+                    </div>
+
+                    <div class="imm-phase-actions">
+                        <button class="btn-secondary" id="backToUpload">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 11L5 7L9 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            返回上传
+                        </button>
+                        <button class="btn-start imm-next-btn" id="goToSteps">
+                            配置译制选项
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3L9 7L5 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 阶段 3：步骤配置 -->
+            <div class="imm-phase" id="phaseSteps">
+                <div class="imm-phase-inner">
+                    <!-- 顶部摘要条 -->
+                    <div class="imm-summary-bar">
+                        <div class="imm-summary-video">
+                            <div class="imm-summary-thumb"><canvas id="summaryThumbCanvas" width="64" height="36"></canvas></div>
+                            <span class="imm-summary-name" id="summaryVideoName">demo_video.mp4</span>
+                        </div>
+                        <div class="imm-summary-lang">
+                            <span class="imm-summary-badge" id="summaryLang">自动检测 → 英语</span>
+                        </div>
+                    </div>
+
+                    <!-- 步骤卡片 -->
+                    <div class="imm-section-title" style="margin-top:24px;">
+                        <div class="imm-section-icon imm-section-icon--cyan">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 4H16V16H4V4Z" stroke="currentColor" stroke-width="1.5"/><path d="M4 8H16M8 8V16" stroke="currentColor" stroke-width="1.5"/></svg>
+                        </div>
+                        <div>
+                            <h3>选择译制步骤</h3>
+                            <p>按需开启，AI 将按顺序自动执行</p>
+                        </div>
+                    </div>
+
+                    <div class="step-cards__list">
+                        <!-- 步骤 1：擦除原字幕 -->
+                        <div class="step-card step-card--active" data-step="erase">
+                            <div class="step-card__head">
+                                <div class="step-card__left">
+                                    <span class="step-card__num">01</span>
+                                    <div class="step-card__icon step-card__icon--red">
+                                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M16 4L8 12L4 16H10L18 8L16 4Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M2 18H18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                                    </div>
+                                    <div class="step-card__info">
+                                        <h4>擦除原字幕</h4>
+                                        <p>AI 自动检测并擦除视频中的原有字幕区域</p>
+                                    </div>
+                                </div>
+                                <label class="step-toggle">
+                                    <input type="checkbox" checked data-step-toggle="erase">
+                                    <span class="step-toggle__slider"></span>
+                                </label>
+                            </div>
+                            <div class="step-card__body">
+                                <div class="step-card__config">
+                                    <div class="config-field">
+                                        <label>擦除模式</label>
+                                        <select id="eraseModeSelect">
+                                            <option value="auto">AI 自动检测</option>
+                                            <option value="manual">手动指定区域</option>
+                                            <option value="full">全帧修复</option>
+                                        </select>
+                                    </div>
+                                    <div class="config-field">
+                                        <label>修复质量</label>
+                                        <select>
+                                            <option>高质量（推荐）</option>
+                                            <option>标准</option>
+                                            <option>快速</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="erase-region-editor" id="eraseRegionEditor" style="display:none;">
+                                    <div class="erase-region-editor__title">
+                                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2.5 2"/></svg>
+                                        擦除区域（百分比坐标）
+                                    </div>
+                                    <div id="eraseRegionList">
+                                        <div class="erase-region-row" data-region="0">
+                                            <span class="erase-region-row__label">1</span>
+                                            <div class="config-field"><label>X</label><input type="text" value="8%"></div>
+                                            <div class="config-field"><label>Y</label><input type="text" value="82%"></div>
+                                            <div class="config-field"><label>宽</label><input type="text" value="84%"></div>
+                                            <div class="config-field"><label>高</label><input type="text" value="12%"></div>
+                                            <button class="erase-region-row__delete" title="删除">
+                                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 3L9 9M9 3L3 9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <button class="erase-region-add" id="addEraseRegion">
+                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2V10M2 6H10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                                        添加擦除区域
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 步骤 2：添加新字幕 -->
+                        <div class="step-card step-card--active" data-step="subtitle">
+                            <div class="step-card__head">
+                                <div class="step-card__left">
+                                    <span class="step-card__num">02</span>
+                                    <div class="step-card__icon step-card__icon--blue">
+                                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="3" y="5" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M6 11H14M6 13H11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                                    </div>
+                                    <div class="step-card__info">
+                                        <h4>添加新字幕</h4>
+                                        <p>翻译并生成目标语言字幕，支持双语对照</p>
+                                    </div>
+                                </div>
+                                <label class="step-toggle">
+                                    <input type="checkbox" checked data-step-toggle="subtitle">
+                                    <span class="step-toggle__slider"></span>
+                                </label>
+                            </div>
+                            <div class="step-card__body">
+                                <div class="step-card__config">
+                                    <div class="config-field">
+                                        <label>字幕样式</label>
+                                        <select>
+                                            <option>默认样式</option>
+                                            <option>简约白字</option>
+                                            <option>双语对照</option>
+                                            <option>底部居中</option>
+                                        </select>
+                                    </div>
+                                    <div class="config-field">
+                                        <label>字幕位置</label>
+                                        <select>
+                                            <option>底部居中</option>
+                                            <option>顶部居中</option>
+                                            <option>自定义位置</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 步骤 3：配音 -->
+                        <div class="step-card step-card--active" data-step="voice">
+                            <div class="step-card__head">
+                                <div class="step-card__left">
+                                    <span class="step-card__num">03</span>
+                                    <div class="step-card__icon step-card__icon--purple">
+                                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 3V13M7 7V9M13 5V11M4 9V7M16 8V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                                    </div>
+                                    <div class="step-card__info">
+                                        <h4>配音</h4>
+                                        <p>用 AI 声音克隆或自然语音生成目标语言配音</p>
+                                    </div>
+                                </div>
+                                <label class="step-toggle">
+                                    <input type="checkbox" checked data-step-toggle="voice">
+                                    <span class="step-toggle__slider"></span>
+                                </label>
+                            </div>
+                            <div class="step-card__body">
+                                <div class="step-card__config">
+                                    <div class="config-field">
+                                        <label>配音风格</label>
+                                        <select>
+                                            <option>克隆原声</option>
+                                            <option>自然男声</option>
+                                            <option>自然女声</option>
+                                        </select>
+                                    </div>
+                                    <div class="config-field">
+                                        <label>语速调整</label>
+                                        <select>
+                                            <option>自动匹配原声</option>
+                                            <option>稍快</option>
+                                            <option>稍慢</option>
+                                            <option>正常语速</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="imm-phase-actions">
+                        <button class="btn-secondary" id="backToLang">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 11L5 7L9 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            返回语言设置
+                        </button>
+                        <button class="btn-start imm-start-btn" id="startTranslate">
+                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M6 4L16 10L6 16V4Z" fill="currentColor"/></svg>
+                            开始译制
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 阶段 4：沉浸式编辑器（视频画布 + 右侧边栏引导） -->
+            <div class="imm-phase" id="phaseEditor">
+                <div class="imm-editor-layout">
+                    <!-- 视频画布区域 -->
+                    <div class="imm-editor-canvas-area" id="editorCanvasArea">
+                        <canvas class="imm-editor-canvas" id="editorCanvas"></canvas>
+
+                        <!-- 扫描动画 -->
+                        <div class="imm-editor-scan" id="editorScan">
+                            <div class="imm-scan-line"></div>
+                            <div class="imm-scan-info">
+                                <div class="imm-scan-spinner"></div>
+                                <span>AI 正在分析视频内容...</span>
+                            </div>
+                        </div>
+
+                        <!-- 擦除区域叠加 -->
+                        <div class="imm-editor-overlay imm-editor-erase" id="editorEraseOverlay" style="display:none;">
+                            <div class="imm-erase-box" style="left:8%;bottom:6%;width:84%;height:12%;">
+                                <span class="imm-erase-label">字幕区域 1</span>
+                                <div class="imm-erase-handle imm-erase-handle--tl"></div>
+                                <div class="imm-erase-handle imm-erase-handle--tr"></div>
+                                <div class="imm-erase-handle imm-erase-handle--bl"></div>
+                                <div class="imm-erase-handle imm-erase-handle--br"></div>
+                            </div>
+                        </div>
+
+                        <!-- 字幕预览叠加 -->
+                        <div class="imm-editor-overlay imm-editor-subtitle" id="editorSubtitleOverlay" style="display:none;">
+                            <div class="imm-subtitle-preview">
+                                <span class="imm-sub-en">The future of AI video translation is here</span>
+                                <span class="imm-sub-zh">AI 视频翻译的未来已来</span>
+                            </div>
+                        </div>
+
+                        <!-- 音波叠加 -->
+                        <div class="imm-editor-overlay imm-editor-voice" id="editorVoiceOverlay" style="display:none;">
+                            <div class="imm-voice-wave" id="editorVoiceWave"></div>
+                        </div>
+
+                        <!-- 播放控制 -->
+                        <div class="imm-editor-controls">
+                            <button class="imm-ctrl-play" id="editorPlay">
+                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 2L14 8L4 14V2Z" fill="currentColor"/></svg>
+                            </button>
+                            <div class="imm-ctrl-progress" id="editorProgress">
+                                <div class="imm-ctrl-track">
+                                    <div class="imm-ctrl-fill" id="editorProgressFill"></div>
+                                </div>
+                            </div>
+                            <span class="imm-ctrl-time" id="editorTime">00:00 / 02:34</span>
+                        </div>
+
+                        <!-- 处理中覆盖 -->
+                        <div class="imm-editor-processing" id="editorProcessing" style="display:none;">
+                            <div class="imm-processing-inner">
+                                <div class="imm-processing-orb">
+                                    <div class="ring"></div>
+                                    <div class="ring"></div>
+                                    <div class="ring"></div>
+                                    <div class="core"></div>
+                                </div>
+                                <div class="imm-processing-text" id="editorProcessingText">正在擦除字幕...</div>
+                                <div class="imm-processing-bar-wrap">
+                                    <div class="imm-processing-bar" id="editorProcessingBar"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 右侧边栏引导 -->
+                    <aside class="imm-editor-sidebar" id="editorSidebar">
+                        <!-- 顶部步骤标识 -->
+                        <div class="imm-sidebar-header">
+                            <span class="imm-sidebar-step-label" id="editorStepLabel">AI 分析中...</span>
+                            <button class="imm-sidebar-collapse" id="editorSidebarToggle" title="收起/展开">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M10 2V14" stroke="currentColor" stroke-width="1.2"/></svg>
+                            </button>
+                        </div>
+
+                        <!-- 步骤内容区（手风琴模式） -->
+                        <div class="imm-sidebar-body imm-accordion" id="editorStepBody">
+
+                            <!-- Step 0: 语言设置 -->
+                            <div class="imm-acc-item imm-acc-item--active" data-editor-panel="0">
+                                <button class="imm-acc-header" data-editor-step="0">
+                                    <span class="imm-acc-dot"></span>
+                                    <div class="imm-acc-icon imm-step-icon--purple">
+                                        <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M3 5H11M7 3V5M5 5C5 8.5 8.5 11 11 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10 15L14 8L18 15M11 13H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    </div>
+                                    <div class="imm-acc-title">
+                                        <h3>语言设置</h3>
+                                        <p>选择源语言与目标语言</p>
+                                    </div>
+                                    <span class="imm-acc-num">1/5</span>
+                                </button>
+                                <div class="imm-acc-content">
+                                    <div class="imm-acc-body">
+                                        <!-- 视频信息卡片 -->
+                                        <div class="imm-sb-video-card" id="sbVideoCard">
+                                            <div class="imm-sb-video-thumb"><canvas id="sbThumbCanvas" width="80" height="45"></canvas></div>
+                                            <div class="imm-sb-video-info">
+                                                <span class="imm-sb-video-name" id="sbVideoFileName">demo_video.mp4</span>
+                                                <span class="imm-sb-video-meta">128.5 MB · 1920×1080</span>
+                                                <button class="imm-sb-video-change" id="sbChangeVideoBtn">更换视频</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="imm-sb-lang-section">
+                                            <div class="imm-sb-lang-row">
+                                                <div class="config-field">
+                                                    <label>源语言</label>
+                                                    <select id="sbSrcLang">
+                                                        <option>自动检测</option>
+                                                        <option>中文</option>
+                                                        <option>英语</option>
+                                                        <option>日语</option>
+                                                        <option>韩语</option>
+                                                        <option>法语</option>
+                                                        <option>德语</option>
+                                                        <option>西班牙语</option>
+                                                    </select>
+                                                </div>
+                                                <div class="imm-sb-lang-arrow">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12H19M15 8L19 12L15 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                                </div>
+                                                <div class="config-field">
+                                                    <label>目标语言</label>
+                                                    <select id="sbTgtLang">
+                                                        <option>英语</option>
+                                                        <option>中文</option>
+                                                        <option>日语</option>
+                                                        <option>韩语</option>
+                                                        <option>法语</option>
+                                                        <option>德语</option>
+                                                        <option>西班牙语</option>
+                                                        <option>阿拉伯语</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="imm-sb-quick-chips">
+                                                <button class="imm-quick-chip" data-src="中文" data-tgt="英语">中 → 英</button>
+                                                <button class="imm-quick-chip" data-src="英语" data-tgt="中文">英 → 中</button>
+                                                <button class="imm-quick-chip" data-src="中文" data-tgt="日语">中 → 日</button>
+                                                <button class="imm-quick-chip" data-src="中文" data-tgt="韩语">中 → 韩</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="imm-acc-foot">
+                                        <div></div>
+                                        <button class="imm-step-next" data-editor-goto="1">
+                                            下一步
+                                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3L9 7L5 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 1: 擦除字幕 -->
+                            <div class="imm-acc-item" data-editor-panel="1">
+                                <button class="imm-acc-header" data-editor-step="1">
+                                    <span class="imm-acc-dot"></span>
+                                    <div class="imm-acc-icon imm-step-icon--red">
+                                        <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M16 4L8 12L4 16H10L18 8L16 4Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M2 18H18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                                    </div>
+                                    <div class="imm-acc-title">
+                                        <h3>擦除字幕</h3>
+                                        <p id="editorEraseInfo">AI 检测到 1 个字幕区域</p>
+                                    </div>
+                                    <label class="step-toggle imm-acc-toggle" onclick="event.stopPropagation()">
+                                        <input type="checkbox" checked data-feature-toggle="erase">
+                                        <span class="step-toggle__slider"></span>
+                                    </label>
+                                    <span class="imm-acc-num">2/5</span>
+                                </button>
+                                <div class="imm-acc-content">
+                                    <div class="imm-acc-body">
+                                        <div class="imm-erase-list">
+                                            <div class="imm-erase-card active">
+                                                <div class="imm-erase-card-icon">
+                                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2.5 2"/></svg>
+                                                </div>
+                                                <div class="imm-erase-card-info">
+                                                    <span class="imm-erase-card-title">底部字幕</span>
+                                                    <span class="imm-erase-card-meta">x:8% y:82% w:84% h:12%</span>
+                                                </div>
+                                                <button class="imm-erase-card-check checked">
+                                                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7L6 10L11 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                                </button>
+                                            </div>
+                                            <button class="imm-erase-add-btn">
+                                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2V12M2 7H12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                                                添加区域
+                                            </button>
+                                        </div>
+                                        <div class="imm-mode-row">
+                                            <label>擦除模式</label>
+                                            <div class="imm-mode-chips">
+                                                <button class="imm-mode-chip active">AI 自动</button>
+                                                <button class="imm-mode-chip">手动调整</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="imm-acc-foot">
+                                        <button class="imm-step-prev" data-editor-goto="0">
+                                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7L9 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                            上一步
+                                        </button>
+                                        <button class="imm-step-next" data-editor-goto="2">
+                                            下一步
+                                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3L9 7L5 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 2: 添加字幕 -->
+                            <div class="imm-acc-item" data-editor-panel="2">
+                                <button class="imm-acc-header" data-editor-step="2">
+                                    <span class="imm-acc-dot"></span>
+                                    <div class="imm-acc-icon imm-step-icon--blue">
+                                        <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="3" y="5" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M6 11H14M6 13H11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                                    </div>
+                                    <div class="imm-acc-title">
+                                        <h3>添加字幕</h3>
+                                        <p>翻译生成目标语言字幕</p>
+                                    </div>
+                                    <label class="step-toggle imm-acc-toggle" onclick="event.stopPropagation()">
+                                        <input type="checkbox" checked data-feature-toggle="subtitle">
+                                        <span class="step-toggle__slider"></span>
+                                    </label>
+                                    <span class="imm-acc-num">3/5</span>
+                                </button>
+                                <div class="imm-acc-content">
+                                    <div class="imm-acc-body">
+                                        <div class="imm-config-grid">
+                                            <div class="config-field">
+                                                <label>字幕语言</label>
+                                                <select><option>英语</option><option>中文</option><option>日语</option><option>韩语</option><option>法语</option></select>
+                                            </div>
+                                            <div class="config-field">
+                                                <label>字幕样式</label>
+                                                <select><option>双语对照</option><option>仅译文</option><option>仅原文</option></select>
+                                            </div>
+                                            <div class="config-field">
+                                                <label>字体大小</label>
+                                                <select><option>中</option><option>小</option><option>大</option></select>
+                                            </div>
+                                            <div class="config-field">
+                                                <label>位置</label>
+                                                <select><option>底部居中</option><option>顶部居中</option></select>
+                                            </div>
+                                        </div>
+                                        <div class="imm-sub-list">
+                                            <div class="imm-sub-item"><span class="imm-sub-time">00:03</span><div class="imm-sub-texts"><span class="imm-sub-orig">大家好，欢迎来到今天的分享</span><span class="imm-sub-trans">Hello everyone, welcome to today's sharing</span></div></div>
+                                            <div class="imm-sub-item"><span class="imm-sub-time">00:09</span><div class="imm-sub-texts"><span class="imm-sub-orig">今天我们来聊一聊 AI 视频翻译</span><span class="imm-sub-trans">Today let's talk about AI video translation</span></div></div>
+                                            <div class="imm-sub-item"><span class="imm-sub-time">00:16</span><div class="imm-sub-texts"><span class="imm-sub-orig">这项技术可以自动擦除原有字幕</span><span class="imm-sub-trans">This technology can automatically erase subtitles</span></div></div>
+                                        </div>
+                                    </div>
+                                    <div class="imm-acc-foot">
+                                        <button class="imm-step-prev" data-editor-goto="1">
+                                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7L9 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                            上一步
+                                        </button>
+                                        <button class="imm-step-next" data-editor-goto="3">
+                                            下一步
+                                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3L9 7L5 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 3: 配音 -->
+                            <div class="imm-acc-item" data-editor-panel="3">
+                                <button class="imm-acc-header" data-editor-step="3">
+                                    <span class="imm-acc-dot"></span>
+                                    <div class="imm-acc-icon imm-step-icon--purple">
+                                        <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 3V13M7 7V9M13 5V11M4 9V7M16 8V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                                    </div>
+                                    <div class="imm-acc-title">
+                                        <h3>配音</h3>
+                                        <p>AI 声音克隆，听起来像原声</p>
+                                    </div>
+                                    <label class="step-toggle imm-acc-toggle" onclick="event.stopPropagation()">
+                                        <input type="checkbox" checked data-feature-toggle="voice">
+                                        <span class="step-toggle__slider"></span>
+                                    </label>
+                                    <span class="imm-acc-num">4/5</span>
+                                </button>
+                                <div class="imm-acc-content">
+                                    <div class="imm-acc-body">
+                                        <div class="imm-config-grid">
+                                            <div class="config-field">
+                                                <label>声音风格</label>
+                                                <select><option>克隆原声</option><option>自然男声 A</option><option>自然女声 A</option></select>
+                                            </div>
+                                            <div class="config-field">
+                                                <label>语速</label>
+                                                <select><option>自动匹配</option><option>稍快</option><option>稍慢</option></select>
+                                            </div>
+                                        </div>
+                                        <div class="imm-voice-list">
+                                            <div class="imm-voice-item"><span class="imm-voice-time">00:03</span><span class="imm-voice-text">Hello everyone, welcome to today's sharing</span><button class="imm-voice-play"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 1.5L10 6L3 10.5V1.5Z" fill="currentColor"/></svg></button></div>
+                                            <div class="imm-voice-item"><span class="imm-voice-time">00:09</span><span class="imm-voice-text">Today let's talk about AI video translation</span><button class="imm-voice-play"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 1.5L10 6L3 10.5V1.5Z" fill="currentColor"/></svg></button></div>
+                                            <div class="imm-voice-item"><span class="imm-voice-time">00:16</span><span class="imm-voice-text">This technology can automatically erase subtitles</span><button class="imm-voice-play"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 1.5L10 6L3 10.5V1.5Z" fill="currentColor"/></svg></button></div>
+                                        </div>
+                                    </div>
+                                    <div class="imm-acc-foot">
+                                        <button class="imm-step-prev" data-editor-goto="2">
+                                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7L9 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                            上一步
+                                        </button>
+                                        <button class="imm-step-next" data-editor-goto="4">
+                                            下一步
+                                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3L9 7L5 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 4: 确认导出 -->
+                            <div class="imm-acc-item" data-editor-panel="4">
+                                <button class="imm-acc-header" data-editor-step="4">
+                                    <span class="imm-acc-dot"></span>
+                                    <div class="imm-acc-icon imm-step-icon--green">
+                                        <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 3V12M10 12L14 8M10 12L6 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 14V16C3 16.5523 3.44772 17 4 17H16C16.5523 17 17 16.5523 17 16V14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                                    </div>
+                                    <div class="imm-acc-title">
+                                        <h3>确认 & 导出</h3>
+                                        <p>检查配置，一键开始处理</p>
+                                    </div>
+                                    <span class="imm-acc-num">5/5</span>
+                                </button>
+                                <div class="imm-acc-content">
+                                    <div class="imm-acc-body">
+                                        <div class="imm-confirm-list">
+                                            <div class="imm-confirm-item">
+                                                <span class="imm-confirm-icon imm-confirm-icon--red"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M16 4L8 12L4 16H10L18 8L16 4Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></span>
+                                                <div class="imm-confirm-info"><span class="imm-confirm-label">擦除字幕</span><span class="imm-confirm-value">1 个区域 · AI 自动</span></div>
+                                                <span class="imm-confirm-check">✓</span>
+                                            </div>
+                                            <div class="imm-confirm-item">
+                                                <span class="imm-confirm-icon imm-confirm-icon--blue"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="5" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M6 11H14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span>
+                                                <div class="imm-confirm-info"><span class="imm-confirm-label">添加字幕</span><span class="imm-confirm-value">英语 · 双语对照</span></div>
+                                                <span class="imm-confirm-check">✓</span>
+                                            </div>
+                                            <div class="imm-confirm-item">
+                                                <span class="imm-confirm-icon imm-confirm-icon--purple"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 3V13M7 7V9M13 5V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+                                                <div class="imm-confirm-info"><span class="imm-confirm-label">配音</span><span class="imm-confirm-value">克隆原声 · 自动匹配</span></div>
+                                                <span class="imm-confirm-check">✓</span>
+                                            </div>
+                                        </div>
+                                        <div class="imm-config-grid">
+                                            <div class="config-field"><label>输出格式</label><select><option>MP4 (H.264)</option><option>MOV (ProRes)</option><option>WebM</option></select></div>
+                                            <div class="config-field"><label>分辨率</label><select><option>原始分辨率</option><option>1080p</option><option>720p</option></select></div>
+                                        </div>
+                                    </div>
+                                    <div class="imm-acc-foot">
+                                        <button class="imm-step-prev" data-editor-goto="3">
+                                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7L9 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                            上一步
+                                        </button>
+                                        <button class="imm-step-start" id="editorStartProcess">
+                                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M6 4L16 10L6 16V4Z" fill="currentColor"/></svg>
+                                            开始处理
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 完成状态 -->
+                            <div class="imm-acc-item imm-acc-item--done" data-editor-panel="done" style="display:none;">
+                                <div class="imm-acc-content" style="display:block;">
+                                    <div class="imm-step-head">
+                                        <div class="imm-step-icon imm-step-icon--green">
+                                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M6 10L9 13L14 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        </div>
+                                        <div>
+                                            <h3>处理完成！</h3>
+                                            <p>视频已成功译制</p>
+                                        </div>
+                                    </div>
+                                    <div class="imm-acc-body">
+                                        <div class="imm-done-actions">
+                                            <button class="imm-done-download">
+                                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3V11M9 11L13 7M9 11L5 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 13V15C3 15.5523 3.44772 16 4 16H14C14.5523 16 15 15.5523 15 15V13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                                                下载视频
+                                            </button>
+                                            <button class="imm-done-edit" id="editorReEdit">
+                                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M12 2L14 4L6 12H4V10L12 2Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+                                                微调编辑
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== 视频预览区（初始隐藏） ========== -->
+        <section class="video-preview-section" style="display:none;">
+            <div class="video-container">
+                <div class="video-loading">
+                    <div class="loading-orb">
+                        <div class="ring"></div>
+                        <div class="ring"></div>
+                        <div class="ring"></div>
+                        <div class="core"></div>
+                    </div>
+                    <div class="loading-text">AI 正在处理你的视频...</div>
+                    <div class="loading-progress"><div class="loading-progress-bar"></div></div>
+                </div>
+                <div class="mock-player" style="display:none;">
+                    <canvas class="mock-canvas" id="mockCanvas"></canvas>
+                    <div class="mock-subtitle">
+                        <span class="mock-sub-en">The future of AI video translation is here</span>
+                        <span class="mock-sub-zh">AI 视频翻译的未来已来</span>
+                    </div>
+                    <div class="mock-erase-overlay" style="display:none;">
+                        <div class="erase-region" style="left:8%;bottom:6%;width:84%;height:12%;"></div>
+                    </div>
+                    <div class="player-controls">
+                        <button class="ctrl-play" id="ctrlPlay">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 2L14 8L4 14V2Z" fill="currentColor"/></svg>
+                        </button>
+                        <span class="ctrl-time" id="ctrlTime">00:00</span>
+                        <div class="ctrl-progress">
+                            <div class="ctrl-progress-track">
+                                <div class="ctrl-progress-fill" id="ctrlProgressFill" style="width:0%"></div>
+                                <div class="ctrl-progress-handle" id="ctrlProgressHandle" style="left:0%"></div>
+                            </div>
+                        </div>
+                        <span class="ctrl-duration">02:34</span>
+                        <button class="ctrl-mute">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 5H5L8 2V12L5 9H2V5Z" stroke="currentColor" stroke-width="1.2"/><path d="M10 4.5C10.8 5.3 11.2 6.5 11.2 7.5C11.2 8.5 10.8 9.5 10 10.3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="pipeline-toolbar">
+                <div class="pipeline-steps">
+                    <div class="pipe-step"><span class="pipe-step-dot"></span>擦除原字幕</div>
+                    <div class="pipe-step"><span class="pipe-step-dot"></span>翻译字幕</div>
+                    <div class="pipe-step"><span class="pipe-step-dot"></span>生成配音</div>
+                </div>
+                <div class="toolbar-actions" style="display:none;">
+                    <button class="toolbar-btn" data-panel="panelErase">
+                        <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M16 4L8 12L4 16H10L18 8L16 4Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M2 18H18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        <span>擦除</span>
+                    </button>
+                    <button class="toolbar-btn" data-panel="panelSubtitle">
+                        <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="3" y="5" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M6 11H14M6 13H11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                        <span>字幕</span>
+                    </button>
+                    <button class="toolbar-btn" data-panel="panelVoice">
+                        <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 3V13M7 7V9M13 5V11M4 9V7M16 8V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        <span>配音</span>
+                    </button>
+                    <div class="toolbar-divider"></div>
+                    <button class="toolbar-btn toolbar-btn-export" data-panel="panelExport">
+                        <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 3V12M10 12L14 8M10 12L6 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 14V16C3 16.5523 3.44772 17 4 17H16C16.5523 17 17 16.5523 17 16V14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        <span>导出</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 浮窗面板 - 擦除区域 -->
+        <div class="float-panel float-panel-wide" id="panelErase">
+            <div class="float-panel-header">
+                <h3>擦除区域调整</h3>
+                <button class="panel-close">×</button>
+            </div>
+            <div class="float-panel-body">
+                <div class="erase-timeline">
+                    <div class="erase-tl-header">
+                        <span class="erase-tl-label">时间轴</span>
+                        <span class="erase-tl-range">00:00 — 02:34</span>
+                    </div>
+                    <div class="erase-tl-track">
+                        <div class="erase-tl-bar"></div>
+                        <div class="erase-tl-region" style="left:0%;width:35%;" data-label="原字幕区域 1">
+                            <span class="erase-tl-region-label">00:03 – 00:52</span>
+                        </div>
+                        <div class="erase-tl-region" style="left:40%;width:28%;" data-label="原字幕区域 2">
+                            <span class="erase-tl-region-label">01:02 – 01:45</span>
+                        </div>
+                        <div class="erase-tl-region" style="left:75%;width:20%;" data-label="原字幕区域 3">
+                            <span class="erase-tl-region-label">01:55 – 02:25</span>
+                        </div>
+                        <div class="erase-tl-playhead" id="eraseTlPlayhead" style="left:0%"></div>
+                    </div>
+                </div>
+                <div class="erase-regions-list">
+                    <div class="erase-region-item">
+                        <div class="eri-header"><span class="eri-badge">区域 1</span><span class="eri-time">00:03 – 00:52</span></div>
+                        <div class="eri-coords">
+                            <div class="config-field"><label>X</label><input type="text" value="8%"></div>
+                            <div class="config-field"><label>Y</label><input type="text" value="82%"></div>
+                            <div class="config-field"><label>宽</label><input type="text" value="84%"></div>
+                            <div class="config-field"><label>高</label><input type="text" value="12%"></div>
+                        </div>
+                    </div>
+                    <div class="erase-region-item">
+                        <div class="eri-header"><span class="eri-badge">区域 2</span><span class="eri-time">01:02 – 01:45</span></div>
+                        <div class="eri-coords">
+                            <div class="config-field"><label>X</label><input type="text" value="8%"></div>
+                            <div class="config-field"><label>Y</label><input type="text" value="82%"></div>
+                            <div class="config-field"><label>宽</label><input type="text" value="84%"></div>
+                            <div class="config-field"><label>高</label><input type="text" value="12%"></div>
+                        </div>
+                    </div>
+                    <div class="erase-region-item">
+                        <div class="eri-header"><span class="eri-badge">区域 3</span><span class="eri-time">01:55 – 02:25</span></div>
+                        <div class="eri-coords">
+                            <div class="config-field"><label>X</label><input type="text" value="10%"></div>
+                            <div class="config-field"><label>Y</label><input type="text" value="5%"></div>
+                            <div class="config-field"><label>宽</label><input type="text" value="30%"></div>
+                            <div class="config-field"><label>高</label><input type="text" value="8%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 浮窗面板 - 字幕 -->
+        <div class="float-panel float-panel-wide" id="panelSubtitle">
+            <div class="float-panel-header">
+                <h3>字幕编辑</h3>
+                <button class="panel-close">×</button>
+            </div>
+            <div class="float-panel-body">
+                <div class="sub-row">
+                    <div class="sub-row-time"><input type="text" value="00:03"><span>–</span><input type="text" value="00:08"></div>
+                    <div class="sub-row-text">
+                        <input type="text" class="sub-text-orig" value="大家好，欢迎来到今天的分享" placeholder="原文">
+                        <input type="text" class="sub-text-trans" value="Hello everyone, welcome to today's sharing" placeholder="译文">
+                    </div>
+                </div>
+                <div class="sub-row">
+                    <div class="sub-row-time"><input type="text" value="00:09"><span>–</span><input type="text" value="00:15"></div>
+                    <div class="sub-row-text">
+                        <input type="text" class="sub-text-orig" value="今天我们来聊一聊 AI 视频翻译" placeholder="原文">
+                        <input type="text" class="sub-text-trans" value="Today let's talk about AI video translation" placeholder="译文">
+                    </div>
+                </div>
+                <div class="sub-row">
+                    <div class="sub-row-time"><input type="text" value="00:16"><span>–</span><input type="text" value="00:24"></div>
+                    <div class="sub-row-text">
+                        <input type="text" class="sub-text-orig" value="这项技术可以自动擦除原有字幕" placeholder="原文">
+                        <input type="text" class="sub-text-trans" value="This technology can automatically erase original subtitles" placeholder="译文">
+                    </div>
+                </div>
+                <div class="sub-row">
+                    <div class="sub-row-time"><input type="text" value="00:25"><span>–</span><input type="text" value="00:33"></div>
+                    <div class="sub-row-text">
+                        <input type="text" class="sub-text-orig" value="并重新生成目标语言的字幕和配音" placeholder="原文">
+                        <input type="text" class="sub-text-trans" value="And regenerate subtitles and dubbing in the target language" placeholder="译文">
+                    </div>
+                </div>
+                <div class="sub-row">
+                    <div class="sub-row-time"><input type="text" value="00:34"><span>–</span><input type="text" value="00:42"></div>
+                    <div class="sub-row-text">
+                        <input type="text" class="sub-text-orig" value="声音克隆技术让配音听起来和原声一样" placeholder="原文">
+                        <input type="text" class="sub-text-trans" value="Voice cloning makes the dubbing sound like the original" placeholder="译文">
+                    </div>
+                </div>
+                <div class="sub-row">
+                    <div class="sub-row-time"><input type="text" value="00:43"><span>–</span><input type="text" value="00:52"></div>
+                    <div class="sub-row-text">
+                        <input type="text" class="sub-text-orig" value="整个过程完全由 AI 自动完成" placeholder="原文">
+                        <input type="text" class="sub-text-trans" value="The entire process is fully automated by AI" placeholder="译文">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 浮窗面板 - 配音 -->
+        <div class="float-panel float-panel-wide" id="panelVoice">
+            <div class="float-panel-header">
+                <h3>配音编辑</h3>
+                <button class="panel-close">×</button>
+            </div>
+            <div class="float-panel-body">
+                <div class="config-field" style="margin-bottom:16px;">
+                    <label>全局声音</label>
+                    <select><option>克隆原声</option><option>自然男声 A</option><option>自然男声 B</option><option>自然女声 A</option><option>自然女声 B</option></select>
+                </div>
+                <div class="voice-rows">
+                    <div class="voice-row">
+                        <div class="voice-row-time"><input type="text" value="00:03"><span>–</span><input type="text" value="00:08"></div>
+                        <input type="text" class="voice-row-text" value="Hello everyone, welcome to today's sharing">
+                        <button class="voice-play-btn" title="试听"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 1.5L10 6L3 10.5V1.5Z" fill="currentColor"/></svg></button>
+                    </div>
+                    <div class="voice-row">
+                        <div class="voice-row-time"><input type="text" value="00:09"><span>–</span><input type="text" value="00:15"></div>
+                        <input type="text" class="voice-row-text" value="Today let's talk about AI video translation">
+                        <button class="voice-play-btn" title="试听"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 1.5L10 6L3 10.5V1.5Z" fill="currentColor"/></svg></button>
+                    </div>
+                    <div class="voice-row">
+                        <div class="voice-row-time"><input type="text" value="00:16"><span>–</span><input type="text" value="00:24"></div>
+                        <input type="text" class="voice-row-text" value="This technology can automatically erase original subtitles">
+                        <button class="voice-play-btn" title="试听"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 1.5L10 6L3 10.5V1.5Z" fill="currentColor"/></svg></button>
+                    </div>
+                    <div class="voice-row">
+                        <div class="voice-row-time"><input type="text" value="00:25"><span>–</span><input type="text" value="00:33"></div>
+                        <input type="text" class="voice-row-text" value="And regenerate subtitles and dubbing in the target language">
+                        <button class="voice-play-btn" title="试听"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 1.5L10 6L3 10.5V1.5Z" fill="currentColor"/></svg></button>
+                    </div>
+                    <div class="voice-row">
+                        <div class="voice-row-time"><input type="text" value="00:34"><span>–</span><input type="text" value="00:42"></div>
+                        <input type="text" class="voice-row-text" value="Voice cloning makes the dubbing sound like the original">
+                        <button class="voice-play-btn" title="试听"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 1.5L10 6L3 10.5V1.5Z" fill="currentColor"/></svg></button>
+                    </div>
+                    <div class="voice-row">
+                        <div class="voice-row-time"><input type="text" value="00:43"><span>–</span><input type="text" value="00:52"></div>
+                        <input type="text" class="voice-row-text" value="The entire process is fully automated by AI">
+                        <button class="voice-play-btn" title="试听"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 1.5L10 6L3 10.5V1.5Z" fill="currentColor"/></svg></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 浮窗面板 - 导出 -->
+        <div class="float-panel" id="panelExport">
+            <div class="float-panel-header">
+                <h3>导出设置</h3>
+                <button class="panel-close">×</button>
+            </div>
+            <div class="float-panel-body">
+                <div class="config-field" style="margin-bottom:16px;">
+                    <label>输出格式</label>
+                    <select><option>MP4 (H.264)</option><option>MOV (ProRes)</option><option>WebM</option></select>
+                </div>
+                <div class="config-field" style="margin-bottom:16px;">
+                    <label>分辨率</label>
+                    <select><option>原始分辨率</option><option>4K (3840×2160)</option><option>1080p</option><option>720p</option></select>
+                </div>
+                <div class="config-field" style="margin-bottom:20px;">
+                    <label>导出字幕文件</label>
+                    <select><option>SRT 字幕</option><option>ASS 字幕</option><option>不导出</option></select>
+                </div>
+                <button class="btn-start" style="width:100%;padding:12px;">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3V11M9 11L13 7M9 11L5 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 13V15C3 15.5523 3.44772 16 4 16H14C14.5523 16 15 15.5523 15 15V13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    下载视频
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+    // ========== 沉浸式引导流程 ==========
+    (function initImmersiveFlow() {
+        const flow = document.getElementById('immersiveFlow');
+        if (!flow) return;
+
+        const phaseUpload = document.getElementById('phaseUpload');
+        const phaseLang = document.getElementById('phaseLang');
+        const phaseSteps = document.getElementById('phaseSteps');
+        const phaseEditor = document.getElementById('phaseEditor');
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('videoFileInput');
+        const goToSteps = document.getElementById('goToSteps');
+        const backToUpload = document.getElementById('backToUpload');
+        const backToLang = document.getElementById('backToLang');
+        const startBtn = document.getElementById('startTranslate');
+        const changeVideoBtn = document.getElementById('changeVideoBtn');
+
+        const allPhases = [phaseUpload, phaseLang, phaseSteps, phaseEditor];
+
+        function showPhase(target) {
+            const isEditor = target === phaseEditor;
+            allPhases.forEach(p => {
+                p.classList.remove('imm-phase--active');
+                p.classList.remove('imm-phase--exit');
+            });
+            if (isEditor) {
+                document.body.classList.add('imm-editor-mode');
+            } else {
+                document.body.classList.remove('imm-editor-mode');
+            }
+            requestAnimationFrame(() => {
+                target.classList.add('imm-phase--active');
+            });
+        }
+
+        function drawThumb(canvasId) {
+            const c = document.getElementById(canvasId);
+            if (!c) return;
+            const ctx = c.getContext('2d');
+            const w = c.width, h = c.height;
+            const grd = ctx.createLinearGradient(0, 0, w, h);
+            grd.addColorStop(0, '#1a1a2e');
+            grd.addColorStop(0.5, '#16213e');
+            grd.addColorStop(1, '#0f3460');
+            ctx.fillStyle = grd;
+            ctx.fillRect(0, 0, w, h);
+            ctx.globalAlpha = 0.2;
+            ctx.beginPath();
+            ctx.arc(w * 0.5, h * 0.35, h * 0.15, 0, Math.PI * 2);
+            ctx.fillStyle = '#818cf8';
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(w * 0.5, h * 0.65, h * 0.18, h * 0.25, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha = 1;
+        }
+
+        uploadZone.addEventListener('click', () => fileInput.click());
+        uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+        uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+        uploadZone.addEventListener('drop', e => { e.preventDefault(); uploadZone.classList.remove('drag-over'); handleFileSelected(e.dataTransfer.files[0]); });
+        fileInput.addEventListener('change', () => { if (fileInput.files.length > 0) handleFileSelected(fileInput.files[0]); });
+
+        function handleFileSelected(file) {
+            const nameEl = document.getElementById('videoFileName');
+            const summaryNameEl = document.getElementById('summaryVideoName');
+            const sbNameEl = document.getElementById('sbVideoFileName');
+            if (nameEl && file) nameEl.textContent = file.name;
+            if (summaryNameEl && file) summaryNameEl.textContent = file.name;
+            if (sbNameEl && file) sbNameEl.textContent = file.name;
+            drawThumb('thumbCanvas');
+            drawThumb('summaryThumbCanvas');
+            drawThumb('sbThumbCanvas');
+            showPhase(phaseEditor);
+            initEditor();
+        }
+
+        document.querySelectorAll('.imm-quick-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const src = chip.dataset.src;
+                const tgt = chip.dataset.tgt;
+                const srcSel = document.getElementById('srcLang');
+                const tgtSel = document.getElementById('tgtLang');
+                [...srcSel.options].forEach(o => { if (o.text === src) srcSel.value = o.value; });
+                [...tgtSel.options].forEach(o => { if (o.text === tgt) tgtSel.value = o.value; });
+                document.querySelectorAll('.imm-quick-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+            });
+        });
+
+        goToSteps.addEventListener('click', () => {
+            const srcLang = document.getElementById('srcLang');
+            const tgtLang = document.getElementById('tgtLang');
+            const summaryLang = document.getElementById('summaryLang');
+            if (summaryLang) summaryLang.textContent = srcLang.options[srcLang.selectedIndex].text + ' → ' + tgtLang.options[tgtLang.selectedIndex].text;
+            showPhase(phaseSteps);
+        });
+        backToUpload.addEventListener('click', () => showPhase(phaseUpload));
+        backToLang.addEventListener('click', () => showPhase(phaseLang));
+        changeVideoBtn.addEventListener('click', () => showPhase(phaseUpload));
+
+        // 开始译制 → 进入侧边栏沉浸式编辑器
+        startBtn.addEventListener('click', () => {
+            showPhase(phaseEditor);
+            initEditor();
+        });
+    })();
+
+    // ========== 沉浸式编辑器逻辑 ==========
+    (function() {
+        let editorInited = false;
+        window.initEditor = function initEditor() {
+            if (editorInited) { startEditorScan(); return; }
+            editorInited = true;
+
+            let currentStep = -1;
+            let playing = true;
+            let videoTime = 0;
+            const videoDuration = 154;
+            let animFrame = null;
+
+            const canvas = document.getElementById('editorCanvas');
+            const ctx = canvas.getContext('2d');
+            const scanEl = document.getElementById('editorScan');
+            const eraseOvl = document.getElementById('editorEraseOverlay');
+            const subOvl = document.getElementById('editorSubtitleOverlay');
+            const voiceOvl = document.getElementById('editorVoiceOverlay');
+            const processingOvl = document.getElementById('editorProcessing');
+            const sidebar = document.getElementById('editorSidebar');
+            const accItems = document.querySelectorAll('.imm-acc-item[data-editor-panel]');
+            const stepLabel = document.getElementById('editorStepLabel');
+            const stepLabels = ['步骤 1/5: 语言设置', '步骤 2/5: 擦除字幕', '步骤 3/5: 添加字幕', '步骤 4/5: 配音', '步骤 5/5: 确认导出'];
+
+            function resizeCanvas() {
+                const area = document.getElementById('editorCanvasArea');
+                if (!area) return;
+                const dpr = window.devicePixelRatio || 1;
+                canvas.width = area.clientWidth * dpr;
+                canvas.height = area.clientHeight * dpr;
+                ctx.scale(dpr, dpr);
+            }
+            resizeCanvas();
+            window.addEventListener('resize', () => { ctx.setTransform(1,0,0,1,0,0); resizeCanvas(); });
+
+            function drawFrame(t) {
+                const dpr = window.devicePixelRatio || 1;
+                const w = canvas.width / dpr, h = canvas.height / dpr;
+                ctx.save();
+                ctx.setTransform(dpr,0,0,dpr,0,0);
+                ctx.clearRect(0,0,w,h);
+                const hue1 = (t*6)%360, hue2 = (hue1+50)%360;
+                const grd = ctx.createLinearGradient(0,0,w,h);
+                grd.addColorStop(0, `hsl(${hue1},35%,10%)`);
+                grd.addColorStop(0.5, `hsl(${hue2},30%,14%)`);
+                grd.addColorStop(1, `hsl(${(hue1+120)%360},25%,8%)`);
+                ctx.fillStyle = grd; ctx.fillRect(0,0,w,h);
+                const cx = w*0.5, cy = h*0.4;
+                ctx.globalAlpha = 0.2;
+                ctx.beginPath(); ctx.arc(cx, cy-30, 28, 0, Math.PI*2);
+                ctx.fillStyle = `hsl(${hue1+180},20%,28%)`; ctx.fill();
+                ctx.beginPath(); ctx.ellipse(cx, cy+30, 36, 50, 0, 0, Math.PI*2); ctx.fill();
+                ctx.globalAlpha = 0.12;
+                for (let i=0;i<10;i++) {
+                    const px = (Math.sin(t*0.25+i*2)*0.4+0.5)*w;
+                    const py = (Math.cos(t*0.18+i*2.3)*0.4+0.5)*h;
+                    const r = 1.5+Math.sin(t*0.5+i)*1;
+                    ctx.beginPath(); ctx.arc(px,py,r,0,Math.PI*2);
+                    ctx.fillStyle='#818cf8'; ctx.fill();
+                }
+                ctx.globalAlpha = 0.2;
+                const mins = Math.floor(t/60), secs = Math.floor(t%60);
+                ctx.font = '500 11px "JetBrains Mono", monospace';
+                ctx.fillStyle = '#fff'; ctx.textAlign = 'right';
+                ctx.fillText(`${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`, w-16, 24);
+                ctx.restore();
+            }
+
+            function tick() {
+                if (playing) { videoTime += 1/60; if (videoTime >= videoDuration) videoTime = 0; }
+                drawFrame(videoTime);
+                const pct = (videoTime/videoDuration)*100;
+                const fill = document.getElementById('editorProgressFill');
+                const timeEl = document.getElementById('editorTime');
+                if (fill) fill.style.width = pct+'%';
+                if (timeEl) { const m=Math.floor(videoTime/60), s=Math.floor(videoTime%60); timeEl.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')} / 02:34`; }
+                animFrame = requestAnimationFrame(tick);
+            }
+
+            function goToStep(step) {
+                currentStep = step;
+                stepLabel.textContent = stepLabels[step] || '';
+                accItems.forEach(item => {
+                    const idx = parseInt(item.dataset.editorPanel);
+                    if (isNaN(idx)) return;
+                    item.classList.remove('imm-acc-item--active', 'imm-acc-item--completed');
+                    const content = item.querySelector('.imm-acc-content');
+                    if (idx === step) {
+                        item.classList.add('imm-acc-item--active');
+                        if (content) content.style.display = '';
+                    } else if (idx < step) {
+                        item.classList.add('imm-acc-item--completed');
+                        if (content) content.style.display = 'none';
+                    } else {
+                        if (content) content.style.display = 'none';
+                    }
+                });
+                eraseOvl.style.display = (step===1 || step===4) ? '' : 'none';
+                subOvl.style.display = (step===2 || step===4) ? '' : 'none';
+                voiceOvl.style.display = (step===3 || step===4) ? '' : 'none';
+                if (step===4) { eraseOvl.style.opacity='0.4'; } else { eraseOvl.style.opacity=''; }
+                sidebar.classList.remove('collapsed');
+                setTimeout(() => { ctx.setTransform(1,0,0,1,0,0); resizeCanvas(); }, 400);
+                // 滚动到当前展开的项
+                const activeItem = document.querySelector('.imm-acc-item--active');
+                if (activeItem) activeItem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            window.startEditorScan = function() {
+                scanEl.style.display = 'none';
+                sidebar.classList.remove('scan-mode');
+                goToStep(0);
+            };
+
+            // Voice wave bars
+            const wave = document.getElementById('editorVoiceWave');
+            let bars = '';
+            for (let i=0;i<40;i++) { const h=10+Math.random()*30; bars += `<div class="imm-vw-bar" style="height:${h}px;animation-delay:${(i*0.05).toFixed(2)}s;"></div>`; }
+            wave.innerHTML = bars;
+
+            function startProcessing() {
+                processingOvl.style.display = '';
+                sidebar.classList.add('processing-mode');
+                stepLabel.textContent = '正在处理...';
+                const steps = ['正在擦除字幕...','正在翻译字幕...','正在生成配音...','正在合成视频...'];
+                const bar = document.getElementById('editorProcessingBar');
+                const text = document.getElementById('editorProcessingText');
+                let i = 0;
+                function next() {
+                    if (i >= steps.length) { bar.style.width='100%'; text.textContent='处理完成！'; setTimeout(showDone, 600); return; }
+                    text.textContent = steps[i]; bar.style.width = ((i+1)/steps.length*100)+'%'; i++;
+                    setTimeout(next, 1500+Math.random()*1000);
+                }
+                next();
+            }
+
+            function showDone() {
+                processingOvl.style.display = 'none';
+                sidebar.classList.remove('processing-mode');
+                stepLabel.textContent = '✓ 处理完成';
+                accItems.forEach(item => {
+                    item.classList.remove('imm-acc-item--active');
+                    item.classList.add('imm-acc-item--completed');
+                    const content = item.querySelector('.imm-acc-content');
+                    if (content) content.style.display = 'none';
+                });
+                const donePanel = document.querySelector('[data-editor-panel="done"]');
+                if (donePanel) { donePanel.style.display=''; }
+                eraseOvl.style.display='none'; subOvl.style.display=''; voiceOvl.style.display='none';
+            }
+
+            // Event listeners
+            document.querySelectorAll('.imm-step-next, .imm-step-prev').forEach(btn => {
+                btn.addEventListener('click', () => goToStep(parseInt(btn.dataset.editorGoto)));
+            });
+            document.querySelectorAll('.imm-acc-header[data-editor-step]').forEach(header => {
+                header.addEventListener('click', () => {
+                    if (currentStep >= 0) goToStep(parseInt(header.dataset.editorStep));
+                });
+            });
+            document.getElementById('editorStartProcess').addEventListener('click', startProcessing);
+            document.getElementById('editorReEdit').addEventListener('click', () => goToStep(0));
+            document.getElementById('editorPlay').addEventListener('click', () => {
+                playing = !playing;
+                document.getElementById('editorPlay').classList.toggle('playing', playing);
+            });
+            document.getElementById('editorProgress').addEventListener('click', e => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                videoTime = Math.max(0, Math.min(1, (e.clientX-rect.left)/rect.width)) * videoDuration;
+            });
+            document.getElementById('editorSidebarToggle').addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
+                // 等侧边栏过渡动画结束后重新计算 canvas 尺寸
+                setTimeout(() => { ctx.setTransform(1,0,0,1,0,0); resizeCanvas(); }, 400);
+            });
+
+            document.querySelectorAll('.imm-mode-chip').forEach(chip => {
+                chip.addEventListener('click', () => { chip.parentElement.querySelectorAll('.imm-mode-chip').forEach(c=>c.classList.remove('active')); chip.classList.add('active'); });
+            });
+            document.querySelectorAll('.imm-erase-card-check').forEach(btn => { btn.addEventListener('click', () => btn.classList.toggle('checked')); });
+
+            // 侧边栏语言快捷选择
+            document.querySelectorAll('.imm-sb-quick-chips .imm-quick-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    const src = chip.dataset.src, tgt = chip.dataset.tgt;
+                    const srcSel = document.getElementById('sbSrcLang');
+                    const tgtSel = document.getElementById('sbTgtLang');
+                    [...srcSel.options].forEach(o => { if (o.text === src) srcSel.value = o.value; });
+                    [...tgtSel.options].forEach(o => { if (o.text === tgt) tgtSel.value = o.value; });
+                    document.querySelectorAll('.imm-sb-quick-chips .imm-quick-chip').forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                });
+            });
+
+            // 更换视频
+            const sbChangeBtn = document.getElementById('sbChangeVideoBtn');
+            if (sbChangeBtn) {
+                sbChangeBtn.addEventListener('click', () => {
+                    document.body.classList.remove('imm-editor-mode');
+                    const phaseUpload = document.getElementById('phaseUpload');
+                    const phaseEditor = document.getElementById('phaseEditor');
+                    [phaseUpload, phaseEditor].forEach(p => p.classList.remove('imm-phase--active'));
+                    requestAnimationFrame(() => phaseUpload.classList.add('imm-phase--active'));
+                });
+            }
+
+            // 功能开关切换 - 切换对应步骤禁用状态
+            document.querySelectorAll('[data-feature-toggle]').forEach(toggle => {
+                toggle.addEventListener('change', () => {
+                    const item = toggle.closest('.imm-acc-item');
+                    if (toggle.checked) { item.classList.remove('imm-acc-item--disabled'); }
+                    else { item.classList.add('imm-acc-item--disabled'); }
+                });
+            });
+
+            tick();
+            startEditorScan();
+        };
+    })();
+    </script>
+</body>
+</html>

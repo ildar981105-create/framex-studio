@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>沉浸式编辑器 — FrameX</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="editor.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body class="editor-body">
+
+    <!-- 顶部极简导航 -->
+    <header class="editor-topbar">
+        <a href="translate-v4.html" class="editor-back">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            返回工作台
+        </a>
+        <div class="editor-topbar-center">
+            <span class="editor-step-label" id="currentStepLabel">AI 分析中...</span>
+        </div>
+        <div class="editor-topbar-right">
+            <button class="editor-help-btn" title="快捷键">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.2"/><path d="M6.5 6.5C6.5 5.67 7.17 5 8 5C8.83 5 9.5 5.67 9.5 6.5C9.5 7.33 8.83 7.5 8 8V9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="8" cy="11" r="0.7" fill="currentColor"/></svg>
+            </button>
+            <button class="editor-sidebar-toggle" id="sidebarToggle" title="收起/展开面板">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M10 2V14" stroke="currentColor" stroke-width="1.2"/></svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- 主体区域：画布 + 右侧边栏 -->
+    <div class="editor-main">
+        <!-- 视频画布区域 -->
+        <div class="editor-canvas-area" id="canvasArea">
+            <canvas class="editor-canvas" id="editorCanvas"></canvas>
+
+            <!-- 扫描动画叠加层 -->
+            <div class="editor-scan-overlay" id="scanOverlay">
+                <div class="scan-line"></div>
+                <div class="scan-info">
+                    <div class="scan-spinner"></div>
+                    <span>AI 正在分析视频内容...</span>
+                </div>
+            </div>
+
+            <!-- 擦除区域叠加层 -->
+            <div class="editor-erase-overlay" id="eraseOverlay" style="display:none;">
+                <div class="erase-box" id="eraseBox1" style="left:8%;bottom:6%;width:84%;height:12%;">
+                    <span class="erase-box-label">字幕区域 1</span>
+                    <div class="erase-box-handle erase-box-handle--tl"></div>
+                    <div class="erase-box-handle erase-box-handle--tr"></div>
+                    <div class="erase-box-handle erase-box-handle--bl"></div>
+                    <div class="erase-box-handle erase-box-handle--br"></div>
+                </div>
+            </div>
+
+            <!-- 字幕预览叠加层 -->
+            <div class="editor-subtitle-overlay" id="subtitleOverlay" style="display:none;">
+                <div class="subtitle-preview">
+                    <span class="subtitle-line-en">The future of AI video translation is here</span>
+                    <span class="subtitle-line-zh">AI 视频翻译的未来已来</span>
+                </div>
+            </div>
+
+            <!-- 音波可视化叠加层 -->
+            <div class="editor-voice-overlay" id="voiceOverlay" style="display:none;">
+                <div class="voice-wave" id="voiceWave"></div>
+            </div>
+
+            <!-- 极简播放控制 -->
+            <div class="editor-player-controls" id="playerControls">
+                <button class="epc-play" id="epcPlay">
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 2L14 8L4 14V2Z" fill="currentColor"/></svg>
+                </button>
+                <div class="epc-progress" id="epcProgress">
+                    <div class="epc-progress-track">
+                        <div class="epc-progress-fill" id="epcProgressFill"></div>
+                    </div>
+                </div>
+                <span class="epc-time" id="epcTime">00:00 / 02:34</span>
+            </div>
+
+            <!-- 处理中的进度覆盖 -->
+            <div class="editor-processing-overlay" id="processingOverlay" style="display:none;">
+                <div class="processing-content">
+                    <div class="processing-orb">
+                        <div class="ring"></div>
+                        <div class="ring"></div>
+                        <div class="ring"></div>
+                        <div class="core"></div>
+                    </div>
+                    <div class="processing-text" id="processingText">正在擦除字幕...</div>
+                    <div class="processing-progress">
+                        <div class="processing-progress-bar" id="processingBar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧边栏 -->
+        <aside class="editor-sidebar" id="editorSidebar">
+            <!-- 竖向步骤进度条 -->
+            <div class="sidebar-steps" id="panelSteps">
+                <button class="sidebar-step active" data-step="0">
+                    <span class="sidebar-step-dot"></span>
+                    <span class="sidebar-step-text">擦除字幕</span>
+                </button>
+                <div class="sidebar-step-line"></div>
+                <button class="sidebar-step" data-step="1">
+                    <span class="sidebar-step-dot"></span>
+                    <span class="sidebar-step-text">添加字幕</span>
+                </button>
+                <div class="sidebar-step-line"></div>
+                <button class="sidebar-step" data-step="2">
+                    <span class="sidebar-step-dot"></span>
+                    <span class="sidebar-step-text">配音</span>
+                </button>
+                <div class="sidebar-step-line"></div>
+                <button class="sidebar-step" data-step="3">
+                    <span class="sidebar-step-dot"></span>
+                    <span class="sidebar-step-text">导出</span>
+                </button>
+            </div>
+
+            <!-- 分割线 -->
+            <div class="sidebar-divider"></div>
+
+            <!-- 步骤内容区 -->
+            <div class="sidebar-content" id="panelContent">
+                <!-- Step 0: 擦除字幕 -->
+                <div class="step-content active" data-step-content="0">
+                    <div class="step-content-header">
+                        <div class="step-content-icon step-content-icon--red">
+                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M16 4L8 12L4 16H10L18 8L16 4Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M2 18H18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        </div>
+                        <div>
+                            <h3>擦除字幕</h3>
+                            <p id="eraseDetectInfo">AI 检测到 1 个字幕区域</p>
+                        </div>
+                    </div>
+                    <div class="step-content-body">
+                        <div class="erase-regions-list" id="eraseRegionsGrid">
+                            <div class="erase-region-card active" data-region="0">
+                                <div class="erase-region-card-icon">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2.5 2"/></svg>
+                                </div>
+                                <div class="erase-region-card-info">
+                                    <span class="erase-region-card-title">底部字幕</span>
+                                    <span class="erase-region-card-meta">x:8% y:82% w:84% h:12%</span>
+                                </div>
+                                <button class="erase-region-card-check checked">
+                                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7L6 10L11 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                </button>
+                            </div>
+                            <button class="erase-region-add-btn" id="addRegionBtn">
+                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2V12M2 7H12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                                添加区域
+                            </button>
+                        </div>
+                        <div class="erase-mode-row">
+                            <label>擦除模式</label>
+                            <div class="mode-chips">
+                                <button class="mode-chip active">AI 自动</button>
+                                <button class="mode-chip">手动调整</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-content-footer">
+                        <div></div>
+                        <button class="step-next-btn" data-goto="1">
+                            下一步
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3L9 7L5 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 1: 添加字幕 -->
+                <div class="step-content" data-step-content="1">
+                    <div class="step-content-header">
+                        <div class="step-content-icon step-content-icon--blue">
+                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="3" y="5" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M6 11H14M6 13H11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                        </div>
+                        <div>
+                            <h3>添加字幕</h3>
+                            <p>翻译生成目标语言字幕</p>
+                        </div>
+                    </div>
+                    <div class="step-content-body">
+                        <div class="config-grid-2col">
+                            <div class="config-field">
+                                <label>字幕语言</label>
+                                <select>
+                                    <option>英语</option>
+                                    <option>中文</option>
+                                    <option>日语</option>
+                                    <option>韩语</option>
+                                    <option>法语</option>
+                                </select>
+                            </div>
+                            <div class="config-field">
+                                <label>字幕样式</label>
+                                <select>
+                                    <option>双语对照</option>
+                                    <option>仅译文</option>
+                                    <option>仅原文</option>
+                                </select>
+                            </div>
+                            <div class="config-field">
+                                <label>字体大小</label>
+                                <select>
+                                    <option>中</option>
+                                    <option>小</option>
+                                    <option>大</option>
+                                </select>
+                            </div>
+                            <div class="config-field">
+                                <label>位置</label>
+                                <select>
+                                    <option>底部居中</option>
+                                    <option>顶部居中</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="subtitle-preview-list">
+                            <div class="sub-preview-item">
+                                <span class="sub-preview-time">00:03</span>
+                                <div class="sub-preview-texts">
+                                    <span class="sub-preview-orig">大家好，欢迎来到今天的分享</span>
+                                    <span class="sub-preview-trans">Hello everyone, welcome to today's sharing</span>
+                                </div>
+                            </div>
+                            <div class="sub-preview-item">
+                                <span class="sub-preview-time">00:09</span>
+                                <div class="sub-preview-texts">
+                                    <span class="sub-preview-orig">今天我们来聊一聊 AI 视频翻译</span>
+                                    <span class="sub-preview-trans">Today let's talk about AI video translation</span>
+                                </div>
+                            </div>
+                            <div class="sub-preview-item">
+                                <span class="sub-preview-time">00:16</span>
+                                <div class="sub-preview-texts">
+                                    <span class="sub-preview-orig">这项技术可以自动擦除原有字幕</span>
+                                    <span class="sub-preview-trans">This technology can automatically erase subtitles</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-content-footer">
+                        <button class="step-prev-btn" data-goto="0">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7L9 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            上一步
+                        </button>
+                        <button class="step-next-btn" data-goto="2">
+                            下一步
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3L9 7L5 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: 配音 -->
+                <div class="step-content" data-step-content="2">
+                    <div class="step-content-header">
+                        <div class="step-content-icon step-content-icon--purple">
+                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 3V13M7 7V9M13 5V11M4 9V7M16 8V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        </div>
+                        <div>
+                            <h3>配音</h3>
+                            <p>AI 声音克隆，听起来像原声</p>
+                        </div>
+                    </div>
+                    <div class="step-content-body">
+                        <div class="config-grid-2col">
+                            <div class="config-field">
+                                <label>声音风格</label>
+                                <select>
+                                    <option>克隆原声</option>
+                                    <option>自然男声 A</option>
+                                    <option>自然男声 B</option>
+                                    <option>自然女声 A</option>
+                                    <option>自然女声 B</option>
+                                </select>
+                            </div>
+                            <div class="config-field">
+                                <label>语速</label>
+                                <select>
+                                    <option>自动匹配</option>
+                                    <option>稍快</option>
+                                    <option>稍慢</option>
+                                    <option>正常</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="voice-sample-list">
+                            <div class="voice-sample-item">
+                                <span class="voice-sample-time">00:03</span>
+                                <span class="voice-sample-text">Hello everyone, welcome to today's sharing</span>
+                                <button class="voice-sample-play">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 1.5L10 6L3 10.5V1.5Z" fill="currentColor"/></svg>
+                                </button>
+                            </div>
+                            <div class="voice-sample-item">
+                                <span class="voice-sample-time">00:09</span>
+                                <span class="voice-sample-text">Today let's talk about AI video translation</span>
+                                <button class="voice-sample-play">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 1.5L10 6L3 10.5V1.5Z" fill="currentColor"/></svg>
+                                </button>
+                            </div>
+                            <div class="voice-sample-item">
+                                <span class="voice-sample-time">00:16</span>
+                                <span class="voice-sample-text">This technology can automatically erase subtitles</span>
+                                <button class="voice-sample-play">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 1.5L10 6L3 10.5V1.5Z" fill="currentColor"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-content-footer">
+                        <button class="step-prev-btn" data-goto="1">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7L9 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            上一步
+                        </button>
+                        <button class="step-next-btn" data-goto="3">
+                            下一步
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3L9 7L5 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: 确认 & 导出 -->
+                <div class="step-content" data-step-content="3">
+                    <div class="step-content-header">
+                        <div class="step-content-icon step-content-icon--green">
+                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 3V12M10 12L14 8M10 12L6 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 14V16C3 16.5523 3.44772 17 4 17H16C16.5523 17 17 16.5523 17 16V14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        </div>
+                        <div>
+                            <h3>确认 & 导出</h3>
+                            <p>检查配置，一键开始处理</p>
+                        </div>
+                    </div>
+                    <div class="step-content-body">
+                        <div class="confirm-summary">
+                            <div class="confirm-item">
+                                <span class="confirm-item-icon confirm-item-icon--red">
+                                    <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M16 4L8 12L4 16H10L18 8L16 4Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+                                </span>
+                                <div class="confirm-item-info">
+                                    <span class="confirm-item-label">擦除字幕</span>
+                                    <span class="confirm-item-value">1 个区域 · AI 自动</span>
+                                </div>
+                                <span class="confirm-item-status">✓</span>
+                            </div>
+                            <div class="confirm-item">
+                                <span class="confirm-item-icon confirm-item-icon--blue">
+                                    <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="5" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M6 11H14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                                </span>
+                                <div class="confirm-item-info">
+                                    <span class="confirm-item-label">添加字幕</span>
+                                    <span class="confirm-item-value">英语 · 双语对照</span>
+                                </div>
+                                <span class="confirm-item-status">✓</span>
+                            </div>
+                            <div class="confirm-item">
+                                <span class="confirm-item-icon confirm-item-icon--purple">
+                                    <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 3V13M7 7V9M13 5V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                                </span>
+                                <div class="confirm-item-info">
+                                    <span class="confirm-item-label">配音</span>
+                                    <span class="confirm-item-value">克隆原声 · 自动匹配</span>
+                                </div>
+                                <span class="confirm-item-status">✓</span>
+                            </div>
+                        </div>
+                        <div class="config-grid-2col">
+                            <div class="config-field">
+                                <label>输出格式</label>
+                                <select><option>MP4 (H.264)</option><option>MOV (ProRes)</option><option>WebM</option></select>
+                            </div>
+                            <div class="config-field">
+                                <label>分辨率</label>
+                                <select><option>原始分辨率</option><option>1080p</option><option>720p</option></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-content-footer">
+                        <button class="step-prev-btn" data-goto="2">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7L9 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            上一步
+                        </button>
+                        <button class="step-start-btn" id="startProcessBtn">
+                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M6 4L16 10L6 16V4Z" fill="currentColor"/></svg>
+                            开始处理
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 完成状态 -->
+                <div class="step-content" data-step-content="done" style="display:none;">
+                    <div class="step-content-header">
+                        <div class="step-content-icon step-content-icon--green">
+                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M6 10L9 13L14 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <div>
+                            <h3>处理完成！</h3>
+                            <p>视频已成功译制</p>
+                        </div>
+                    </div>
+                    <div class="step-content-body">
+                        <div class="done-actions">
+                            <button class="done-download-btn" id="downloadBtn">
+                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3V11M9 11L13 7M9 11L5 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 13V15C3 15.5523 3.44772 16 4 16H14C14.5523 16 15 15.5523 15 15V13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                                下载视频
+                            </button>
+                            <button class="done-edit-btn" id="reEditBtn">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M12 2L14 4L6 12H4V10L12 2Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+                                微调编辑
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+    (function() {
+        let currentStep = -1;
+        let playing = true;
+        let videoTime = 0;
+        const videoDuration = 154;
+        let animFrame = null;
+
+        const canvas = document.getElementById('editorCanvas');
+        const ctx = canvas.getContext('2d');
+        const scanOverlay = document.getElementById('scanOverlay');
+        const eraseOverlay = document.getElementById('eraseOverlay');
+        const subtitleOverlay = document.getElementById('subtitleOverlay');
+        const voiceOverlay = document.getElementById('voiceOverlay');
+        const processingOverlay = document.getElementById('processingOverlay');
+        const sidebar = document.getElementById('editorSidebar');
+        const panelSteps = document.querySelectorAll('.sidebar-step');
+        const stepContents = document.querySelectorAll('.step-content');
+        const stepLabel = document.getElementById('currentStepLabel');
+
+        function resizeCanvas() {
+            const area = document.getElementById('canvasArea');
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = area.clientWidth * dpr;
+            canvas.height = area.clientHeight * dpr;
+            ctx.scale(dpr, dpr);
+        }
+        resizeCanvas();
+        window.addEventListener('resize', () => {
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            resizeCanvas();
+        });
+
+        function drawFrame(t) {
+            const dpr = window.devicePixelRatio || 1;
+            const w = canvas.width / dpr;
+            const h = canvas.height / dpr;
+            ctx.save();
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.clearRect(0, 0, w, h);
+
+            const hue1 = (t * 6) % 360;
+            const hue2 = (hue1 + 50) % 360;
+            const grd = ctx.createLinearGradient(0, 0, w, h);
+            grd.addColorStop(0, `hsl(${hue1}, 35%, 10%)`);
+            grd.addColorStop(0.5, `hsl(${hue2}, 30%, 14%)`);
+            grd.addColorStop(1, `hsl(${(hue1+120)%360}, 25%, 8%)`);
+            ctx.fillStyle = grd;
+            ctx.fillRect(0, 0, w, h);
+
+            const cx = w * 0.5, cy = h * 0.4;
+            ctx.globalAlpha = 0.2;
+            ctx.beginPath();
+            ctx.arc(cx, cy - 30, 28, 0, Math.PI * 2);
+            ctx.fillStyle = `hsl(${hue1 + 180}, 20%, 28%)`;
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(cx, cy + 30, 36, 50, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.globalAlpha = 0.12;
+            for (let i = 0; i < 10; i++) {
+                const px = (Math.sin(t * 0.25 + i * 2) * 0.4 + 0.5) * w;
+                const py = (Math.cos(t * 0.18 + i * 2.3) * 0.4 + 0.5) * h;
+                const r = 1.5 + Math.sin(t * 0.5 + i) * 1;
+                ctx.beginPath();
+                ctx.arc(px, py, r, 0, Math.PI * 2);
+                ctx.fillStyle = '#818cf8';
+                ctx.fill();
+            }
+
+            ctx.globalAlpha = 0.2;
+            const mins = Math.floor(t / 60);
+            const secs = Math.floor(t % 60);
+            ctx.font = '500 11px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'right';
+            ctx.fillText(`${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`, w - 16, 24);
+
+            ctx.restore();
+        }
+
+        function tick() {
+            if (playing) {
+                videoTime += 1 / 60;
+                if (videoTime >= videoDuration) videoTime = 0;
+            }
+            drawFrame(videoTime);
+            updatePlayerUI();
+            animFrame = requestAnimationFrame(tick);
+        }
+
+        function updatePlayerUI() {
+            const pct = (videoTime / videoDuration) * 100;
+            const fill = document.getElementById('epcProgressFill');
+            const timeEl = document.getElementById('epcTime');
+            if (fill) fill.style.width = pct + '%';
+            if (timeEl) {
+                const m = Math.floor(videoTime / 60);
+                const s = Math.floor(videoTime % 60);
+                timeEl.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')} / 02:34`;
+            }
+        }
+
+        const stepLabels = ['步骤 1/4: 擦除字幕', '步骤 2/4: 添加字幕', '步骤 3/4: 配音', '步骤 4/4: 确认导出'];
+
+        function goToStep(step) {
+            currentStep = step;
+            stepLabel.textContent = stepLabels[step] || '';
+
+            panelSteps.forEach((s, i) => {
+                s.classList.remove('active', 'completed');
+                if (i < step) s.classList.add('completed');
+                if (i === step) s.classList.add('active');
+            });
+
+            stepContents.forEach(c => {
+                c.classList.remove('active');
+                c.style.display = 'none';
+            });
+            const target = document.querySelector(`[data-step-content="${step}"]`);
+            if (target) {
+                target.style.display = '';
+                requestAnimationFrame(() => target.classList.add('active'));
+            }
+
+            eraseOverlay.style.display = step === 0 ? '' : 'none';
+            subtitleOverlay.style.display = step === 1 ? '' : 'none';
+            voiceOverlay.style.display = step === 2 ? '' : 'none';
+
+            if (step === 3) {
+                eraseOverlay.style.display = '';
+                eraseOverlay.style.opacity = '0.4';
+                subtitleOverlay.style.display = '';
+                voiceOverlay.style.display = '';
+            } else {
+                eraseOverlay.style.opacity = '';
+            }
+
+            sidebar.classList.remove('collapsed');
+        }
+
+        function startScan() {
+            stepLabel.textContent = 'AI 分析中...';
+            scanOverlay.style.display = '';
+            sidebar.classList.add('scan-mode');
+
+            setTimeout(() => {
+                scanOverlay.style.display = 'none';
+                sidebar.classList.remove('scan-mode');
+                goToStep(0);
+            }, 2500);
+        }
+
+        function initVoiceWave() {
+            const wave = document.getElementById('voiceWave');
+            let bars = '';
+            for (let i = 0; i < 40; i++) {
+                const h = 10 + Math.random() * 30;
+                const delay = (i * 0.05).toFixed(2);
+                bars += `<div class="voice-wave-bar" style="height:${h}px;animation-delay:${delay}s;"></div>`;
+            }
+            wave.innerHTML = bars;
+        }
+        initVoiceWave();
+
+        function startProcessing() {
+            processingOverlay.style.display = '';
+            sidebar.classList.add('processing-mode');
+            stepLabel.textContent = '正在处理...';
+
+            const steps = ['正在擦除字幕...', '正在翻译字幕...', '正在生成配音...', '正在合成视频...'];
+            const bar = document.getElementById('processingBar');
+            const text = document.getElementById('processingText');
+            let i = 0;
+
+            function nextProcessStep() {
+                if (i >= steps.length) {
+                    bar.style.width = '100%';
+                    text.textContent = '处理完成！';
+                    setTimeout(showDone, 600);
+                    return;
+                }
+                text.textContent = steps[i];
+                bar.style.width = ((i + 1) / steps.length * 100) + '%';
+                i++;
+                setTimeout(nextProcessStep, 1500 + Math.random() * 1000);
+            }
+            nextProcessStep();
+        }
+
+        function showDone() {
+            processingOverlay.style.display = 'none';
+            sidebar.classList.remove('processing-mode');
+            stepLabel.textContent = '✓ 处理完成';
+
+            panelSteps.forEach(s => {
+                s.classList.remove('active');
+                s.classList.add('completed');
+            });
+
+            stepContents.forEach(c => {
+                c.classList.remove('active');
+                c.style.display = 'none';
+            });
+            const doneContent = document.querySelector('[data-step-content="done"]');
+            if (doneContent) {
+                doneContent.style.display = '';
+                requestAnimationFrame(() => doneContent.classList.add('active'));
+            }
+
+            eraseOverlay.style.display = 'none';
+            subtitleOverlay.style.display = '';
+            voiceOverlay.style.display = 'none';
+        }
+
+        // Event listeners
+        document.querySelectorAll('.step-next-btn, .step-prev-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const goto = parseInt(btn.dataset.goto);
+                goToStep(goto);
+            });
+        });
+
+        panelSteps.forEach(s => {
+            s.addEventListener('click', () => {
+                const step = parseInt(s.dataset.step);
+                if (currentStep >= 0) goToStep(step);
+            });
+        });
+
+        document.getElementById('startProcessBtn').addEventListener('click', startProcessing);
+        document.getElementById('reEditBtn').addEventListener('click', () => goToStep(0));
+
+        document.getElementById('epcPlay').addEventListener('click', () => {
+            playing = !playing;
+            document.getElementById('epcPlay').classList.toggle('playing', playing);
+        });
+
+        document.getElementById('epcProgress').addEventListener('click', e => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+            videoTime = pct * videoDuration;
+        });
+
+        // Sidebar toggle
+        document.getElementById('sidebarToggle').addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+        });
+
+        document.querySelectorAll('.mode-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                chip.parentElement.querySelectorAll('.mode-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.erase-region-card-check').forEach(btn => {
+            btn.addEventListener('click', () => btn.classList.toggle('checked'));
+        });
+
+        document.addEventListener('keydown', e => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                playing = !playing;
+                document.getElementById('epcPlay').classList.toggle('playing', playing);
+            }
+            if (e.code === 'Tab') {
+                e.preventDefault();
+                if (e.shiftKey) {
+                    if (currentStep > 0) goToStep(currentStep - 1);
+                } else {
+                    if (currentStep < 3) goToStep(currentStep + 1);
+                }
+            }
+            if (e.code === 'Escape') {
+                sidebar.classList.toggle('collapsed');
+            }
+        });
+
+        tick();
+        startScan();
+    })();
+    </script>
+</body>
+</html>
