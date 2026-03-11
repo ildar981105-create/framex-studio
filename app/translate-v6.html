@@ -2940,6 +2940,10 @@
         animation: pathExpandIn 0.4s ease-out;
     }
     .tv2-path-expand.active { display: flex; }
+    /* 展开时 landing 取消垂直居中，避免内容溢出 */
+    .tv2-landing:has(.tv2-path-expand.active) {
+        justify-content: flex-start;
+    }
     @keyframes pathExpandIn {
         from { opacity: 0; transform: translateY(12px); }
         to { opacity: 1; transform: translateY(0); }
@@ -3224,6 +3228,9 @@
         flex: 1;
         overflow-y: auto;
         padding: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
         scrollbar-width: thin;
         scrollbar-color: rgba(255,255,255,0.06) transparent;
     }
@@ -3232,26 +3239,27 @@
     .tv2-landing-scroll {
         max-width: 900px;
         margin: 0 auto;
+        width: 100%;
     }
     .tv2-landing-hero {
         text-align: center;
-        padding: 48px 0 36px;
+        padding: 24px 0 28px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
     }
     .tv2-landing-hero h1 {
-        font-size: 2.2rem;
+        font-size: 2rem;
         font-weight: 800;
         line-height: 1.3;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
     }
     .tv2-landing-hero p {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         color: var(--text-muted);
         max-width: 640px;
-        margin: 0 auto 28px;
+        margin: 0 auto 20px;
     }
     /* Primary Action Area */
     .tv2-landing-primary-action {
@@ -5107,7 +5115,7 @@
 
     <main class="main-content" style="padding:0; display:flex; flex-direction:column; overflow:hidden;">
         <!-- 顶部栏 -->
-        <header class="topbar" id="mainTopbar" style="padding:24px 40px; flex-shrink:0;">
+        <header class="topbar" id="mainTopbar" style="padding:16px 40px; flex-shrink:0;">
             <div class="topbar-left">
                 <a href="create.html" class="topbar-back" title="返回首页">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -5401,99 +5409,6 @@
                     </div>
                 </div>
 
-                <!-- Three Steps Section -->
-                <div class="tv2-steps-section">
-                    <div class="tv2-section-header">
-                        <h2>三步完成视频译制</h2>
-                        <p>AI 全自动处理，上传视频即可获得多语种译制版本</p>
-                    </div>
-                    <div class="tv2-steps-row">
-                        <div class="tv2-step-card">
-                            <div class="tv2-step-num">1</div>
-                            <div class="tv2-step-icon">
-                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M17 3H7C5.89543 3 5 3.89543 5 5V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V5C19 3.89543 18.1046 3 17 3Z" stroke="#a855f7" stroke-width="1.5"/><path d="M9 8H15M9 12H15M9 16H12" stroke="#a855f7" stroke-width="1.5" stroke-linecap="round"/><path d="M8 8L15 16" stroke="#ef4444" stroke-width="2" stroke-linecap="round" opacity="0.6"/></svg>
-                            </div>
-                            <h4>擦除原始字幕</h4>
-                            <p>AI 智能识别视频中的硬字幕区域，精准擦除不留痕迹，还原干净画面</p>
-                        </div>
-                        <div class="tv2-step-card">
-                            <div class="tv2-step-num">2</div>
-                            <div class="tv2-step-icon">
-                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M4 18V6C4 4.89543 4.89543 4 6 4H18C19.1046 4 20 4.89543 20 6V18C20 19.1046 19.1046 20 18 20H6C4.89543 20 4 19.1046 4 18Z" stroke="#06b6d4" stroke-width="1.5"/><rect x="6" y="14" width="12" height="4" rx="1" fill="rgba(6,182,212,0.15)" stroke="#06b6d4" stroke-width="1"/><path d="M8 16.5H16" stroke="#06b6d4" stroke-width="1.2" stroke-linecap="round"/></svg>
-                            </div>
-                            <h4>添加新语种字幕</h4>
-                            <p>自动翻译为目标语言，生成精准时间轴对齐的新字幕，支持样式自定义</p>
-                        </div>
-                        <div class="tv2-step-card">
-                            <div class="tv2-step-num">3</div>
-                            <div class="tv2-step-icon">
-                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3Z" stroke="#a855f7" stroke-width="1.5"/><path d="M9 9C9 9 10 8 12 8C14 8 15 9.5 15 11C15 12.5 13 13 13 14" stroke="#06b6d4" stroke-width="1.5" stroke-linecap="round"/><circle cx="12.5" cy="17" r="0.5" fill="#06b6d4" stroke="#06b6d4"/><path d="M8 12L6 10M16 12L18 10M12 7V5" stroke="#a855f7" stroke-width="1" stroke-linecap="round" opacity="0.4"/></svg>
-                            </div>
-                            <h4>AI 克隆配音</h4>
-                            <p>克隆原视频说话人声纹特征，用目标语言重新配音，口型自然、情感一致</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Scene cards -->
-                <div class="tv2-scenes-section">
-                    <div class="tv2-section-header">
-                        <h2>应用场景</h2>
-                        <p>覆盖短视频、教育、影视等多种内容类型</p>
-                    </div>
-                    <div class="tv2-landing-scenes">
-                    <div class="tv2-scene-card">
-                        <div class="tv2-scene-img">
-                            <img src="https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=400&h=240&fit=crop" alt="短视频出海">
-                            <div class="tv2-scene-overlay"></div>
-                        </div>
-                        <div class="tv2-scene-body">
-                            <h4>🎬 短视频出海</h4>
-                            <p>TikTok / Reels / Shorts 一键多语种发布，保持原创者声音特征</p>
-                        </div>
-                    </div>
-                    <div class="tv2-scene-card">
-                        <div class="tv2-scene-img">
-                            <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=400&h=240&fit=crop" alt="在线课程">
-                            <div class="tv2-scene-overlay"></div>
-                        </div>
-                        <div class="tv2-scene-body">
-                            <h4>🎓 在线课程翻译</h4>
-                            <p>网课 / MOOC / 企业培训视频多语种翻译，精准专业术语</p>
-                        </div>
-                    </div>
-                    <div class="tv2-scene-card">
-                        <div class="tv2-scene-img">
-                            <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?w=400&h=240&fit=crop" alt="影视字幕">
-                            <div class="tv2-scene-overlay"></div>
-                        </div>
-                        <div class="tv2-scene-body">
-                            <h4>📺 影视剧集翻译</h4>
-                            <p>电影、纪录片、综艺节目字幕翻译 + 原声克隆配音</p>
-                        </div>
-                    </div>
-                </div>
-                </div>
-
-                <!-- Before/After showcase -->
-                <div class="tv2-landing-showcase">
-                    <h3 class="tv2-landing-section-title">效果展示</h3>
-                    <div class="tv2-showcase-row">
-                        <div class="tv2-showcase-item">
-                            <div class="tv2-showcase-img">
-                                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=360&h=200&fit=crop" alt="原始视频">
-                                <span class="tv2-showcase-label">原始视频 · 中文</span>
-                            </div>
-                        </div>
-                        <div class="tv2-showcase-arrow">→</div>
-                        <div class="tv2-showcase-item">
-                            <div class="tv2-showcase-img">
-                                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=360&h=200&fit=crop" alt="译制视频" style="filter: hue-rotate(30deg) saturate(1.1);">
-                                <span class="tv2-showcase-label">译制视频 · English</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -9344,9 +9259,13 @@
         var pathBackNew = document.getElementById('pathBackNew');
         var pathBackImport = document.getElementById('pathBackImport');
 
+        var landingEl = document.getElementById('tv2Landing');
+
         function expandPath(type) {
             // 隐藏双卡片
             if (pathCards) pathCards.style.display = 'none';
+            // 展开时取消垂直居中
+            if (landingEl) landingEl.style.justifyContent = 'flex-start';
             // 显示对应展开区
             if (type === 'new' && pathExpandNew) {
                 pathExpandNew.classList.add('active');
@@ -9363,6 +9282,8 @@
             if (pathExpandImport) pathExpandImport.classList.remove('active');
             // 恢复双卡片
             if (pathCards) pathCards.style.display = '';
+            // 恢复垂直居中
+            if (landingEl) landingEl.style.justifyContent = '';
         }
 
         // 卡片点击 → 展开
