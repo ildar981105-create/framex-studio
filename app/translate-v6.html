@@ -3455,6 +3455,14 @@
         margin: 0 auto;
         width: 100%;
     }
+    /* 首屏 wrapper：撑满可视区域，内容垂直居中 */
+    .tv2-first-screen {
+        min-height: calc(100vh - 80px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
     .tv2-landing-hero {
         text-align: center;
         padding: 24px 0 28px;
@@ -5595,6 +5603,8 @@
             <!-- Active Tasks Bar (shown when tasks are minimized) -->
             <div class="tv2-active-tasks-bar" id="activeTasksBar"></div>
             <div class="tv2-landing-scroll">
+                <!-- 首屏 wrapper -->
+                <div class="tv2-first-screen">
                 <!-- Hero -->
                 <div class="tv2-landing-hero">
                     <h1>短视频出海，<span class="gradient-text">3 分钟说全球 120+ 语言</span></h1>
@@ -5884,6 +5894,7 @@
 
                     </div>
                 </div>
+                </div><!-- /tv2-first-screen -->
 
                 <!-- ===== 第二屏：流程 · 效果 · 能力 ===== -->
                 <div class="tv2-second-screen">
